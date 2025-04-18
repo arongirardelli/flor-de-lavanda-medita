@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card } from '@/components/ui/card';
 import { ptBR } from 'date-fns/locale';
+import { DayContent, DayContentProps } from 'react-day-picker';
 
 interface MenstrualCalendarProps {
   onDateSelect?: (date: Date) => void;
@@ -81,19 +82,27 @@ const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
     }
   };
   
-  // Custom day renderer
-  const dayRender = (day: Date) => {
+  // Custom day renderer that works with DayContentProps
+  const CustomDay = (props: DayContentProps) => {
+    const { date: dayDate, ...rest } = props;
+    
+    if (!dayDate) return <DayContent {...props} />;
+    
     let className = "";
     
-    if (isMenstruation(day)) {
+    if (isMenstruation(dayDate)) {
       className = "bg-rosa-200 text-rosa-900 rounded-full";
-    } else if (isOvulation(day)) {
+    } else if (isOvulation(dayDate)) {
       className = "bg-lavanda-400 text-white rounded-full";
-    } else if (isFertile(day)) {
+    } else if (isFertile(dayDate)) {
       className = "bg-lavanda-200 text-lavanda-800 rounded-full";
     }
     
-    return <div className={className}>{day.getDate()}</div>;
+    return (
+      <div className={className}>
+        <DayContent {...props} />
+      </div>
+    );
   };
   
   return (
@@ -105,9 +114,8 @@ const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
         selected={date}
         onSelect={handleSelect}
         locale={ptBR}
-        // @ts-ignore - We're extending the component with our custom day rendering
         components={{
-          Day: dayRender,
+          DayContent: CustomDay
         }}
         className="rounded-md border"
       />

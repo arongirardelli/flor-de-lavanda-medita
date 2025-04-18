@@ -97,7 +97,7 @@ const Perfil = () => {
       {/* Tabs */}
       <div className="px-4">
         <Tabs 
-          defaultValue={activeTab} 
+          value={activeTab} 
           onValueChange={setActiveTab}
           className="w-full"
         >

@@ -71,7 +71,7 @@ const Explorar = () => {
         </div>
         
         {/* Category tabs */}
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full bg-lavanda-50 p-1 overflow-x-auto flex no-scrollbar rounded-full">
             {categories.map((category) => (
               <TabsTrigger 
@@ -83,6 +83,14 @@ const Explorar = () => {
               </TabsTrigger>
             ))}
           </TabsList>
+          
+          {/* We need to include TabsContent elements for each tab */}
+          {categories.map((category) => (
+            <TabsContent key={category} value={category} className="mt-0">
+              {/* The content is the same for all tabs, just filtered differently */}
+              {/* This is handled by the filteredMeditations state */}
+            </TabsContent>
+          ))}
         </Tabs>
       </div>
       

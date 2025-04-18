@@ -40,7 +40,7 @@ const Ciclo = () => {
         </div>
         
         <Tabs 
-          defaultValue={activeTab} 
+          value={activeTab} 
           onValueChange={setActiveTab}
           className="w-full"
         >
@@ -67,91 +67,93 @@ const Ciclo = () => {
               Sintomas
             </TabsTrigger>
           </TabsList>
+          
+          <TabsContent value="calendario" className="mt-0">
+            <MenstrualCalendar />
+            
+            <div className="mt-8">
+              <h3 className="text-lavanda-800 font-medium mb-4">Meditações para seu ciclo</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {cicloMeditacoes.map((meditacao) => (
+                  <MeditationCard
+                    key={meditacao.id}
+                    id={meditacao.id}
+                    title={meditacao.titulo}
+                    duration={meditacao.duracao}
+                    category={meditacao.categoria}
+                    imageUrl={meditacao.imagemUrl}
+                  />
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="estatisticas" className="mt-0">
+            <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
+              <h3 className="text-lavanda-800 font-medium mb-3">Histórico do Ciclo</h3>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between py-2 border-b border-lavanda-100">
+                  <span className="text-lavanda-700">Duração média do ciclo</span>
+                  <span className="font-medium text-lavanda-800">{averageCycleLength} dias</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-lavanda-100">
+                  <span className="text-lavanda-700">Duração da última menstruação</span>
+                  <span className="font-medium text-lavanda-800">{lastPeriodDuration} dias</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-lavanda-100">
+                  <span className="text-lavanda-700">Fase atual</span>
+                  <span className="font-medium text-lavanda-800">{currentPhase}</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-lavanda-700">Próxima menstruação em</span>
+                  <span className="font-medium text-lavanda-800">8 dias</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <h3 className="text-lavanda-800 font-medium mb-1">Dica de bem-estar</h3>
+              <p className="text-sm text-lavanda-600 mb-4">
+                Durante a fase lútea, seu corpo precisa de mais descanso e autocuidado.
+                Pratique respiração profunda e evite alimentos inflamatórios.
+              </p>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="sintomas" className="mt-0">
+            <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
+              <h3 className="text-lavanda-800 font-medium mb-3">Registro de Sintomas</h3>
+              <p className="text-sm text-lavanda-600 mb-4">
+                Último ciclo (5-10 Abril)
+              </p>
+              
+              <div className="space-y-4">
+                {symptoms.map((day, index) => (
+                  <div key={index} className="pb-3 border-b border-lavanda-100 last:border-0">
+                    <p className="font-medium text-lavanda-700 mb-2">{day.day}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {day.symptoms.map((symptom, i) => (
+                        <span key={i} className="bg-lavanda-100 text-lavanda-800 rounded-full px-3 py-1 text-xs">
+                          {symptom}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <button className="w-full btn-primary mt-4">
+              Adicionar sintomas hoje
+            </button>
+          </TabsContent>
         </Tabs>
       </div>
       
       {/* Tab content */}
       <div className="px-4 py-6">
-        <TabsContent value="calendario" className="mt-0">
-          <MenstrualCalendar />
-          
-          <div className="mt-8">
-            <h3 className="text-lavanda-800 font-medium mb-4">Meditações para seu ciclo</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {cicloMeditacoes.map((meditacao) => (
-                <MeditationCard
-                  key={meditacao.id}
-                  id={meditacao.id}
-                  title={meditacao.titulo}
-                  duration={meditacao.duracao}
-                  category={meditacao.categoria}
-                  imageUrl={meditacao.imagemUrl}
-                />
-              ))}
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="estatisticas" className="mt-0">
-          <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
-            <h3 className="text-lavanda-800 font-medium mb-3">Histórico do Ciclo</h3>
-            
-            <div className="space-y-4">
-              <div className="flex justify-between py-2 border-b border-lavanda-100">
-                <span className="text-lavanda-700">Duração média do ciclo</span>
-                <span className="font-medium text-lavanda-800">{averageCycleLength} dias</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-lavanda-100">
-                <span className="text-lavanda-700">Duração da última menstruação</span>
-                <span className="font-medium text-lavanda-800">{lastPeriodDuration} dias</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-lavanda-100">
-                <span className="text-lavanda-700">Fase atual</span>
-                <span className="font-medium text-lavanda-800">{currentPhase}</span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span className="text-lavanda-700">Próxima menstruação em</span>
-                <span className="font-medium text-lavanda-800">8 dias</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <h3 className="text-lavanda-800 font-medium mb-1">Dica de bem-estar</h3>
-            <p className="text-sm text-lavanda-600 mb-4">
-              Durante a fase lútea, seu corpo precisa de mais descanso e autocuidado.
-              Pratique respiração profunda e evite alimentos inflamatórios.
-            </p>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="sintomas" className="mt-0">
-          <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
-            <h3 className="text-lavanda-800 font-medium mb-3">Registro de Sintomas</h3>
-            <p className="text-sm text-lavanda-600 mb-4">
-              Último ciclo (5-10 Abril)
-            </p>
-            
-            <div className="space-y-4">
-              {symptoms.map((day, index) => (
-                <div key={index} className="pb-3 border-b border-lavanda-100 last:border-0">
-                  <p className="font-medium text-lavanda-700 mb-2">{day.day}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {day.symptoms.map((symptom, i) => (
-                      <span key={i} className="bg-lavanda-100 text-lavanda-800 rounded-full px-3 py-1 text-xs">
-                        {symptom}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <button className="w-full btn-primary mt-4">
-            Adicionar sintomas hoje
-          </button>
-        </TabsContent>
+        {/* All tab content is now inside TabsContent components within the Tabs component */}
       </div>
       
       <BottomNavigation />

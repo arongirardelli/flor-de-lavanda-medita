@@ -1,5 +1,5 @@
 
-import { Play } from "lucide-react";
+import { Play, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 
@@ -26,9 +26,10 @@ const MeditationCard = ({ id, title, duration, category, imageUrl }: MeditationC
               <Play size={20} className="text-white ml-1" />
             </div>
           </div>
-          <span className="absolute bottom-2 right-2 bg-black/40 text-white text-xs py-1 px-2 rounded-full backdrop-blur-sm">
+          <div className="absolute bottom-2 right-2 bg-black/40 text-white text-xs py-1 px-2 rounded-full backdrop-blur-sm flex items-center gap-1">
+            <Clock size={12} />
             {duration}
-          </span>
+          </div>
         </div>
         <h3 className="font-medium text-sm text-lavanda-800 line-clamp-2">{title}</h3>
         <p className="text-xs text-lavanda-600 mt-1">{category}</p>

@@ -1,4 +1,3 @@
-
 // Dados de exemplo para meditações
 export const meditacoes = [
   // Categoria: Ansiedade
@@ -395,4 +394,3 @@ export const emergencyMeditation = {
   audioUrl: '/assets/emergencia-ansiedade.mp3',
   descricao: 'Exercício rápido de respiração para momentos de ansiedade aguda'
 };
-

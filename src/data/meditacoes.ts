@@ -1,3 +1,4 @@
+
 // Dados de exemplo para meditações
 export const meditacoes = [
   // Categoria: Ansiedade
@@ -36,8 +37,8 @@ export const meditacoes = [
     titulo: 'Exercício de Aterramento',
     categoria: 'Ansiedade',
     duracao: '4 min',
-    imagemUrl: '/lovable-uploads/meditation-anxiety3.jpg',
-    audioUrl: '/assets/exercicio-aterramento.mp3',
+    imagemUrl: 'https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia//exercicio-aterramento.jpeg',
+    audioUrl: 'https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia//exercicio-aterramento.mp3',
     descricao: 'Técnica de aterramento para reconexão com o presente e redução da ansiedade.',
     beneficios: [
       'Traz de volta ao momento presente',
@@ -51,8 +52,8 @@ export const meditacoes = [
     titulo: 'Visualização Positiva',
     categoria: 'Ansiedade',
     duracao: '10 min',
-    imagemUrl: '/lovable-uploads/meditation-anxiety4.jpg',
-    audioUrl: '/assets/visualizacao-positiva.mp3',
+    imagemUrl: 'https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia//visualizacao-positiva.jpeg',
+    audioUrl: 'https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia//visualizacao-positiva.mp3',
     descricao: 'Prática de visualização para criar um espaço mental seguro e tranquilo.',
     beneficios: [
       'Cria imagens mentais relaxantes',
@@ -66,8 +67,8 @@ export const meditacoes = [
     titulo: 'Acalme sua Mente',
     categoria: 'Ansiedade',
     duracao: '7 min',
-    imagemUrl: '/lovable-uploads/meditation-anxiety5.jpg',
-    audioUrl: '/assets/acalme-sua-mente.mp3',
+    imagemUrl: 'https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia//acalme-sua-mente.jpeg',
+    audioUrl: 'https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia//acalme-sua-mente.mp3',
     descricao: 'Meditação para acalmar pensamentos acelerados e encontrar paz interior.',
     beneficios: [
       'Reduz o fluxo de pensamentos',

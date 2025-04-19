@@ -1,14 +1,28 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FileUpload } from '@/components/FileUpload';
 import { Card } from '@/components/ui/card';
+import { useAuth } from '@/components/AuthProvider';
 
 export const MediaUpload = () => {
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, isLoading, navigate]);
 
   const handleUploadSuccess = (url: string) => {
     setUploadedUrls(prev => [...prev, url]);
   };
+
+  if (isLoading || !user) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto p-4">

@@ -7,8 +7,8 @@ export const meditacoes = [
     titulo: 'Respiração para Ansiedade',
     categoria: 'Ansiedade',
     duracao: '5 min',
-    imagemUrl: '/lovable-uploads/meditation-anxiety1.jpg',
-    audioUrl: '/assets/respiracao-para-ansiedade.mp3',
+    imagemUrl: 'https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia//respiracaoo-para%20-ansiedade.jpg',
+    audioUrl: 'https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia//respiracaoo-para%20-ansiedade.mp3',
     descricao: 'Uma prática de respiração diafragmática para acalmar o sistema nervoso e reduzir a ansiedade em momentos de estresse.',
     beneficios: [
       'Reduz os níveis de cortisol no corpo',
@@ -22,8 +22,8 @@ export const meditacoes = [
     titulo: 'Meditação Guiada Anti-Ansiedade',
     categoria: 'Ansiedade',
     duracao: '8 min',
-    imagemUrl: '/lovable-uploads/meditation-anxiety2.jpg',
-    audioUrl: '/assets/meditacao-anti-ansiedade.mp3',
+    imagemUrl: 'https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia//meditacao-guiada-anti-ansiedade.jpg',
+    audioUrl: 'https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia//meditacao-guiada-anti-ansiedade.mp3',
     descricao: 'Meditação guiada para ajudar a reduzir a ansiedade e encontrar calma interior.',
     beneficios: [
       'Reduz sintomas de ansiedade',

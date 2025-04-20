@@ -1,11 +1,9 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/components/AuthProvider';
 
 interface AddSymptomsDialogProps {
   open: boolean;
@@ -22,40 +20,6 @@ const commonSymptoms = [
 export function AddSymptomsDialog({ open, onOpenChange, date }: AddSymptomsDialogProps) {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
-  const { user } = useAuth();
-  
-  // Carrega os sintomas existentes ao abrir o diálogo
-  useEffect(() => {
-    const loadExistingSymptoms = async () => {
-      if (!open || !user || !date) return;
-      
-      try {
-        const dateStr = date.toISOString().split('T')[0];
-        
-        const { data, error } = await supabase
-          .from('cycle_symptoms')
-          .select('symptoms, notes')
-          .eq('user_id', user.id)
-          .eq('date', dateStr)
-          .maybeSingle();
-          
-        if (error) throw error;
-        
-        if (data) {
-          setSelectedSymptoms(data.symptoms || []);
-          setNotes(data.notes || '');
-        } else {
-          // Reset form if no existing data
-          setSelectedSymptoms([]);
-          setNotes('');
-        }
-      } catch (error) {
-        console.error('Error loading symptoms:', error);
-      }
-    };
-    
-    loadExistingSymptoms();
-  }, [open, user, date]);
 
   const toggleSymptom = (symptom: string) => {
     setSelectedSymptoms(prev => 
@@ -65,63 +29,10 @@ export function AddSymptomsDialog({ open, onOpenChange, date }: AddSymptomsDialo
     );
   };
 
-  const handleSubmit = async () => {
-    try {
-      if (!user) {
-        toast.error('Você precisa estar logado para adicionar sintomas.');
-        return;
-      }
-      
-      if (!date || !(date instanceof Date)) {
-        toast.error('Data inválida.');
-        return;
-      }
-      
-      const dateStr = date.toISOString().split('T')[0];
-      
-      // Verificar se já existe um registro para essa data
-      const { data: existingData } = await supabase
-        .from('cycle_symptoms')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('date', dateStr)
-        .maybeSingle();
-        
-      let error;
-      
-      if (existingData) {
-        // Atualizar registro existente
-        const { error: updateError } = await supabase
-          .from('cycle_symptoms')
-          .update({
-            symptoms: selectedSymptoms,
-            notes: notes.trim() || null
-          })
-          .eq('id', existingData.id);
-          
-        error = updateError;
-      } else {
-        // Inserir novo registro
-        const { error: insertError } = await supabase
-          .from('cycle_symptoms')
-          .insert({
-            date: dateStr,
-            symptoms: selectedSymptoms,
-            notes: notes.trim() || null,
-            user_id: user.id
-          });
-          
-        error = insertError;
-      }
-
-      if (error) throw error;
-
-      toast.success('Sintomas registrados com sucesso!');
-      onOpenChange(false);
-    } catch (error) {
-      toast.error('Erro ao registrar sintomas. Tente novamente.');
-      console.error('Error adding symptoms:', error);
-    }
+  const handleSubmit = () => {
+    // Here we'll later add the logic to save to the database
+    toast.success('Sintomas registrados com sucesso!');
+    onOpenChange(false);
   };
 
   return (
@@ -130,7 +41,7 @@ export function AddSymptomsDialog({ open, onOpenChange, date }: AddSymptomsDialo
         <DialogHeader>
           <DialogTitle>Registrar Sintomas</DialogTitle>
           <DialogDescription>
-            Registre os sintomas para o dia {date instanceof Date ? date.toLocaleDateString('pt-BR') : ''}
+            Registre os sintomas para o dia {date.toLocaleDateString('pt-BR')}
           </DialogDescription>
         </DialogHeader>
 

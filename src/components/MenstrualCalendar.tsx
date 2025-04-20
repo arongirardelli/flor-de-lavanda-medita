@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { ptBR } from 'date-fns/locale';
 import { CustomDay } from './calendar/CustomDay';
 import { CycleLegend } from './calendar/CycleLegend';
+import { AddSymptomsDialog } from './AddSymptomsDialog';
 
 const MenstrualCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [cycleStartDate, setCycleStartDate] = useState<Date | null>(null);
+  const [showSymptomsDialog, setShowSymptomsDialog] = useState(false);
   
   const handleSelect = (newDate: Date | undefined) => {
     if (!newDate) return;
@@ -60,8 +62,22 @@ const MenstrualCalendar = () => {
           {cycleStartDate ? 'Atualizar Início do Período' : 'Iniciar Período'}
         </Button>
         
+        <Button 
+          onClick={() => setShowSymptomsDialog(true)}
+          variant="outline"
+          className="w-full border-lavanda-300 text-lavanda-700 hover:bg-lavanda-50"
+        >
+          Registrar sintomas hoje
+        </Button>
+        
         <CycleLegend />
       </div>
+
+      <AddSymptomsDialog
+        open={showSymptomsDialog}
+        onOpenChange={setShowSymptomsDialog}
+        date={selectedDate || new Date()}
+      />
     </Card>
   );
 };

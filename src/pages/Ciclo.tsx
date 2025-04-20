@@ -1,10 +1,38 @@
 
+import { useState } from 'react';
 import MenstrualCalendar from '@/components/MenstrualCalendar';
 import BottomNavigation from '@/components/BottomNavigation';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
+import { CycleTabs } from '@/components/cycle/CycleTabs';
+import { useCycleData } from '@/hooks/useCycleData';
 
 const Ciclo = () => {
+  const [activeTab, setActiveTab] = useState('calendario');
+  const { 
+    cycles, 
+    handlePeriodToggle 
+  } = useCycleData();
+
+  // Mock data for now - in a real app this would come from your backend
+  const currentPhase = "Folicular";
+  const daysUntilNextPeriod = 14;
+  const averageCycleLength = 28;
+  const lastPeriodDuration = 5;
+  const symptoms = [
+    {
+      day: "Hoje",
+      date: new Date().toISOString(),
+      symptoms: ["Cólica", "Dor de cabeça"],
+      notes: "Sintomas moderados"
+    }
+  ];
+
+  const handleAddSymptoms = () => {
+    // This will be implemented in the AddSymptomsDialog
+    console.log("Add symptoms clicked");
+  };
+
   return (
     <div className="pb-24">
       <Alert className="mx-4 mt-4 bg-lavanda-50 border-lavanda-200">
@@ -15,7 +43,18 @@ const Ciclo = () => {
       </Alert>
       
       <div className="bg-gradient-sunset pt-6 pb-6 px-4 rounded-b-[30px]">
-        <MenstrualCalendar />
+        <CycleTabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          cycles={cycles}
+          currentPhase={currentPhase}
+          daysUntilNextPeriod={daysUntilNextPeriod}
+          averageCycleLength={averageCycleLength}
+          lastPeriodDuration={lastPeriodDuration}
+          symptoms={symptoms}
+          onCycleCalculated={() => {}}
+          onAddSymptoms={handleAddSymptoms}
+        />
       </div>
       <BottomNavigation />
     </div>

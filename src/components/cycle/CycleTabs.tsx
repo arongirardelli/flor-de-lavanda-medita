@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarIcon, LineChart, ListTodo } from 'lucide-react';
 import { CycleCalculatorForm } from '@/components/CycleCalculatorForm';
@@ -48,26 +47,26 @@ export function CycleTabs({
     <Tabs 
       value={activeTab} 
       onValueChange={setActiveTab}
-      className="w-full"
+      className="w-full space-y-4"
     >
-      <TabsList className="w-full bg-[#FFDFF6]/70 backdrop-blur-sm p-1 rounded-full flex gap-2">
+      <TabsList className="w-full bg-[#FFDFF6]/70 backdrop-blur-sm p-1 rounded-full flex justify-between">
         <TabsTrigger 
           value="calendario" 
-          className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center gap-1 px-4 py-2"
+          className="flex-1 rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center justify-center gap-1 px-4 py-2"
         >
           <CalendarIcon size={18} className="text-lavanda-400" />
           <span>Calendário</span>
         </TabsTrigger>
         <TabsTrigger 
           value="estatisticas" 
-          className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center gap-1 px-4 py-2"
+          className="flex-1 rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center justify-center gap-1 px-4 py-2"
         >
           <LineChart size={18} className="text-lavanda-400" />
           <span>Estatísticas</span>
         </TabsTrigger>
         <TabsTrigger 
           value="sintomas" 
-          className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center gap-1 px-4 py-2"
+          className="flex-1 rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center justify-center gap-1 px-4 py-2"
         >
           <ListTodo size={18} className="text-lavanda-400" />
           <span>Sintomas</span>
@@ -125,4 +124,3 @@ export function CycleTabs({
     </Tabs>
   );
 }
-

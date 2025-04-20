@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,6 +10,7 @@ import { meditacoes } from '@/data/meditacoes';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { useCycleData } from '@/hooks/useCycleData';
+import { Button } from '@/components/ui/button';
 
 const Ciclo = () => {
   const navigate = useNavigate();
@@ -24,12 +24,10 @@ const Ciclo = () => {
     notes?: string | null;
   }>>([]);
   
-  // Filter meditations related to menstrual cycle
   const cicloMeditacoes = meditacoes.filter(med => 
     med.categoria.toLowerCase() === 'ciclo'
   );
   
-  // Calculate stats based on cycles
   const calculateStats = () => {
     if (!cycles || cycles.length === 0) {
       return {
@@ -40,22 +38,19 @@ const Ciclo = () => {
       };
     }
     
-    // Ordenar ciclos por data
     const sortedCycles = [...cycles].sort((a, b) => 
       new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
     );
     
-    // Duração do último período
     const lastCycle = sortedCycles[0];
     const lastStart = new Date(lastCycle.start_date);
     const lastEnd = lastCycle.end_date ? new Date(lastCycle.end_date) : new Date(lastStart);
     if (!lastCycle.end_date) {
-      lastEnd.setDate(lastStart.getDate() + 5); // Default a 5 dias se não tiver end_date
+      lastEnd.setDate(lastStart.getDate() + 5);
     }
     
     const lastPeriodDuration = Math.floor((lastEnd.getTime() - lastStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     
-    // Calcular duração média do ciclo (se houver pelo menos 2 ciclos)
     let averageCycleLength = 28;
     if (sortedCycles.length >= 2) {
       const cycleLengths = [];
@@ -71,7 +66,6 @@ const Ciclo = () => {
       }
     }
     
-    // Calcular fase atual e dias até próximo período
     const today = new Date();
     const daysSinceLastPeriod = Math.floor((today.getTime() - lastStart.getTime()) / (1000 * 60 * 60 * 24));
     
@@ -150,7 +144,6 @@ const Ciclo = () => {
 
   return (
     <div className="pb-24">
-      {/* Header */}
       <div className="bg-gradient-sunset pt-12 pb-6 px-4 rounded-b-[30px]">
         <div className="flex items-center gap-3 mb-4">
           <ArrowLeft size={20} className="text-white" onClick={() => navigate(-1)} />

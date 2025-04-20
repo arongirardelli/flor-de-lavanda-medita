@@ -23,9 +23,13 @@ export function CustomDay(props: CustomDayProps) {
   let className = "";
   
   try {
+    // Check if current date is menstruation
+    const isMenstruationDay = isMenstruation(date, cycles);
+    
+    // Get ovulation and fertile days
     const { isOvulation, isFertile } = getReproductiveDays(date, cycles);
     
-    if (isMenstruation(date, cycles)) {
+    if (isMenstruationDay) {
       className = "bg-rosa-200 hover:bg-rosa-300 text-rosa-900 rounded-full transition-colors";
     } else if (isOvulation) {
       className = "bg-lavanda-400 hover:bg-lavanda-500 text-white rounded-full transition-colors";

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -60,19 +61,32 @@ export function CycleCalculatorForm({ onCalculate }: CycleCalculatorFormProps) {
     const cycleDuration = parseInt(cycleLen.toString());
     const periodDuration = parseInt(periodLen.toString());
     
+    // Add current cycle
     const currentCycle = new Date(startDate);
     dates.push({
       start_date: new Date(currentCycle),
       end_date: new Date(new Date(currentCycle).setDate(currentCycle.getDate() + periodDuration - 1))
     });
     
-    for (let i = 1; i <= 2; i++) {
+    // Add future cycles
+    for (let i = 1; i <= 5; i++) {
       const nextCycleStart = new Date(new Date(startDate).setDate(startDate.getDate() + (cycleDuration * i)));
       const nextCycleEnd = new Date(new Date(nextCycleStart).setDate(nextCycleStart.getDate() + periodDuration - 1));
       
       dates.push({
         start_date: nextCycleStart,
         end_date: nextCycleEnd
+      });
+    }
+    
+    // Also add past cycles for better calculation
+    for (let i = 1; i <= 2; i++) {
+      const pastCycleStart = new Date(new Date(startDate).setDate(startDate.getDate() - (cycleDuration * i)));
+      const pastCycleEnd = new Date(new Date(pastCycleStart).setDate(pastCycleStart.getDate() + periodDuration - 1));
+      
+      dates.push({
+        start_date: pastCycleStart,
+        end_date: pastCycleEnd
       });
     }
     

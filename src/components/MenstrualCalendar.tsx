@@ -63,7 +63,7 @@ const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
           <Button 
             onClick={() => handlePeriodToggle(date, user.id)}
             variant="outline" 
-            className="w-full"
+            className="w-full add-symptoms-btn"
           >
             {isMenstruation(date, cycles) ? 'Finalizar Período' : 'Iniciar Período'}
           </Button>

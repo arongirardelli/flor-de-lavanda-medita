@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Calendar as CalendarIcon, LineChart, ListTodo } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
 import MenstrualCalendar from '@/components/MenstrualCalendar';
+import { CycleCalculatorForm } from '@/components/CycleCalculatorForm';
 import MeditationCard from '@/components/MeditationCard';
 import { meditacoes } from '@/data/meditacoes';
 
@@ -30,6 +31,11 @@ const Ciclo = () => {
     { day: "Dia 5", symptoms: ["Retenção de líquidos"] },
   ];
   
+  const handleCycleCalculated = () => {
+    // Refresh the calendar view or perform any necessary updates
+    setActiveTab('calendario');
+  };
+
   return (
     <div className="pb-24">
       {/* Header */}
@@ -69,7 +75,10 @@ const Ciclo = () => {
           </TabsList>
           
           <TabsContent value="calendario" className="mt-0">
-            <MenstrualCalendar />
+            <CycleCalculatorForm onCalculate={handleCycleCalculated} />
+            <div className="mt-4">
+              <MenstrualCalendar />
+            </div>
             
             <div className="mt-8">
               <h3 className="text-lavanda-800 font-medium mb-4">Meditações para seu ciclo</h3>
@@ -149,11 +158,6 @@ const Ciclo = () => {
             </button>
           </TabsContent>
         </Tabs>
-      </div>
-      
-      {/* Tab content */}
-      <div className="px-4 py-6">
-        {/* All tab content is now inside TabsContent components within the Tabs component */}
       </div>
       
       <BottomNavigation />

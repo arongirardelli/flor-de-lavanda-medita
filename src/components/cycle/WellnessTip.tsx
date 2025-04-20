@@ -1,11 +1,10 @@
-
 interface WellnessTipProps {
   currentPhase: string;
 }
-
-export function WellnessTip({ currentPhase }: WellnessTipProps) {
-  return (
-    <div className="bg-white rounded-xl p-4 shadow-sm">
+export function WellnessTip({
+  currentPhase
+}: WellnessTipProps) {
+  return <div className="bg-white rounded-xl p-4 shadow-sm">
       <h3 className="text-lavanda-800 font-medium mb-1">Dica de bem-estar</h3>
       <p className="text-sm text-lavanda-600 mb-4">
         {currentPhase === "Menstrual" && "Durante a fase menstrual, seu corpo precisa de descanso. Pratique atividades leves e cuide da sua alimentação."}
@@ -14,9 +13,6 @@ export function WellnessTip({ currentPhase }: WellnessTipProps) {
         {currentPhase === "Lútea" && "Durante a fase lútea, seu corpo precisa de mais descanso e autocuidado. Pratique respiração profunda e evite alimentos inflamatórios."}
         {currentPhase === "Desconhecido" && "Registre seu ciclo regularmente para receber dicas personalizadas para cada fase."}
       </p>
-      <p className="text-xs text-rosa-600 border-t border-lavanda-100 pt-3">
-        ⚠️ Este ciclo não deve, em hipótese alguma, ser usado como método contraceptivo ou planejamento de gravidez. Ele é apenas uma ferramenta para auxiliar no controle das emoções e bem-estar, não substituindo o acompanhamento de um profissional.
-      </p>
-    </div>
-  );
+      
+    </div>;
 }

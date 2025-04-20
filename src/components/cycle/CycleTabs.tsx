@@ -50,27 +50,27 @@ export function CycleTabs({
       onValueChange={setActiveTab}
       className="w-full"
     >
-      <TabsList className="w-full bg-white/20 backdrop-blur-sm p-1 rounded-full">
+      <TabsList className="w-full bg-[#FFDFF6]/70 backdrop-blur-sm p-1 rounded-full flex gap-2">
         <TabsTrigger 
           value="calendario" 
-          className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600"
+          className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center gap-1 px-4 py-2"
         >
-          <CalendarIcon size={16} className="mr-1" />
-          Calendário
+          <CalendarIcon size={18} className="text-lavanda-400" />
+          <span>Calendário</span>
         </TabsTrigger>
         <TabsTrigger 
           value="estatisticas" 
-          className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600"
+          className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center gap-1 px-4 py-2"
         >
-          <LineChart size={16} className="mr-1" />
-          Estatísticas
+          <LineChart size={18} className="text-lavanda-400" />
+          <span>Estatísticas</span>
         </TabsTrigger>
         <TabsTrigger 
           value="sintomas" 
-          className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600"
+          className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center gap-1 px-4 py-2"
         >
-          <ListTodo size={16} className="mr-1" />
-          Sintomas
+          <ListTodo size={18} className="text-lavanda-400" />
+          <span>Sintomas</span>
         </TabsTrigger>
       </TabsList>
       
@@ -79,7 +79,6 @@ export function CycleTabs({
         <div className="mt-4">
           <MenstrualCalendar />
         </div>
-        
         <div className="mt-8">
           <h3 className="text-lavanda-800 font-medium mb-4">Meditações para seu ciclo</h3>
           <div className="grid grid-cols-2 gap-4">
@@ -113,7 +112,17 @@ export function CycleTabs({
           symptoms={symptoms}
           onAddSymptoms={onAddSymptoms}
         />
+        <div className="mt-6">
+          <WellnessTip currentPhase={currentPhase} />
+          <div className="mt-4 bg-lavanda-50 border border-lavanda-100 text-rosa-600 rounded-xl px-4 py-3 text-xs">
+            <strong>Aviso importante:</strong><br />
+            Essa tabela é apenas uma aproximação para um ciclo de 28 dias
+            e <span className="font-semibold underline">não deve, em hipótese alguma, ser usada como método contraceptivo ou para planejamento de gravidez</span>.<br />
+            Use-a apenas como ferramenta de autoconhecimento e referência para o seu bem-estar.
+          </div>
+        </div>
       </TabsContent>
     </Tabs>
   );
 }
+

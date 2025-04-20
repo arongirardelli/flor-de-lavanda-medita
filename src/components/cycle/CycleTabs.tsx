@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarIcon, LineChart, ListTodo } from 'lucide-react';
 import { CycleCalculatorForm } from '@/components/CycleCalculatorForm';
@@ -9,7 +8,6 @@ import { CycleStats } from './CycleStats';
 import { WellnessTip } from './WellnessTip';
 import { SymptomsList } from './SymptomsList';
 import type { CycleData } from '@/hooks/useCycleData';
-
 interface CycleTabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -37,21 +35,17 @@ export function CycleTabs({
   lastPeriodDuration,
   symptoms,
   onCycleCalculated,
-  onAddSymptoms,
+  onAddSymptoms
 }: CycleTabsProps) {
   const cicloMeditacoes = meditacoes.filter(med => med.categoria.toLowerCase() === 'ciclo');
-  return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-4">
+  return <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-4">
       <TabsList className="w-full bg-[#FFDFF6]/70 backdrop-blur-sm p-1 rounded-full flex justify-between">
         <TabsTrigger value="calendario" className="flex-1 rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center justify-center gap-1 px-4 py-2">
           <CalendarIcon size={18} className="text-lavanda-400" />
           <span>Calendário</span>
         </TabsTrigger>
         {/* Estatísticas nunca foi removida, mantemos ela acessível */}
-        <TabsTrigger value="estatisticas" className="flex-1 rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center justify-center gap-1 px-4 py-2">
-          <LineChart size={18} className="text-lavanda-400" />
-          <span>Estatísticas</span>
-        </TabsTrigger>
+        
         <TabsTrigger value="sintomas" className="flex-1 rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600 flex items-center justify-center gap-1 px-4 py-2">
           <ListTodo size={18} className="text-lavanda-400" />
           <span>Sintomas</span>
@@ -65,27 +59,12 @@ export function CycleTabs({
         <div className="mt-8">
           <h3 className="text-lavanda-800 font-medium mb-4">Meditações para seu ciclo</h3>
           <div className="grid grid-cols-2 gap-4">
-            {cicloMeditacoes.map(meditacao => (
-              <MeditationCard
-                key={meditacao.id}
-                id={meditacao.id}
-                title={meditacao.titulo}
-                duration={meditacao.duracao}
-                category={meditacao.categoria}
-                imageUrl={meditacao.imagemUrl}
-              />
-            ))}
+            {cicloMeditacoes.map(meditacao => <MeditationCard key={meditacao.id} id={meditacao.id} title={meditacao.titulo} duration={meditacao.duracao} category={meditacao.categoria} imageUrl={meditacao.imagemUrl} />)}
           </div>
         </div>
       </TabsContent>
       <TabsContent value="estatisticas" className="mt-0">
-        <CycleStats
-          cycles={cycles}
-          currentPhase={currentPhase}
-          daysUntilNextPeriod={daysUntilNextPeriod}
-          averageCycleLength={averageCycleLength}
-          lastPeriodDuration={lastPeriodDuration}
-        />
+        <CycleStats cycles={cycles} currentPhase={currentPhase} daysUntilNextPeriod={daysUntilNextPeriod} averageCycleLength={averageCycleLength} lastPeriodDuration={lastPeriodDuration} />
         <WellnessTip currentPhase={currentPhase} />
       </TabsContent>
       <TabsContent value="sintomas" className="mt-0">
@@ -100,6 +79,5 @@ export function CycleTabs({
           </div>
         </div>
       </TabsContent>
-    </Tabs>
-  );
+    </Tabs>;
 }

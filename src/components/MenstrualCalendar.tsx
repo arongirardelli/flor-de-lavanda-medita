@@ -8,6 +8,7 @@ import { DayContent, DayContentProps } from 'react-day-picker';
 import { supabase } from '@/integrations/supabase/client';
 import { AddSymptomsDialog } from './AddSymptomsDialog';
 import { toast } from 'sonner';
+import { useAuth } from '@/components/AuthProvider';
 
 interface MenstrualCalendarProps {
   onDateSelect?: (date: Date) => void;
@@ -22,17 +23,22 @@ const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [cycles, setCycles] = useState<CycleData[]>([]);
   const [symptomsDialogOpen, setSymptomsDialogOpen] = useState(false);
+  const { user } = useAuth();
   
   // Fetch user's menstrual cycles
   useEffect(() => {
     const fetchCycles = async () => {
+      if (!user) return;
+      
       const { data, error } = await supabase
         .from('menstrual_cycles')
         .select('start_date, end_date')
+        .eq('user_id', user.id)
         .order('start_date', { ascending: false });
         
       if (error) {
         toast.error('Erro ao carregar dados do ciclo');
+        console.error('Error fetching cycles:', error);
         return;
       }
       
@@ -42,7 +48,7 @@ const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
     };
     
     fetchCycles();
-  }, []);
+  }, [user]);
   
   // Check if a date is in menstruation period
   const isMenstruation = (date: Date) => {
@@ -91,45 +97,54 @@ const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
   
   // Handle start/end period
   const handlePeriodToggle = async () => {
-    if (!date) return;
+    if (!date || !user) {
+      toast.error('Você precisa estar logado para registrar seu período');
+      return;
+    }
     
     const today = date.toISOString().split('T')[0];
     const existingPeriod = cycles.find(c => 
       new Date(c.start_date).toISOString().split('T')[0] === today
     );
     
-    if (existingPeriod) {
-      // End period
-      const { error } = await supabase
-        .from('menstrual_cycles')
-        .update({ end_date: today })
-        .eq('start_date', today);
-        
-      if (error) {
-        toast.error('Erro ao atualizar período');
-        return;
+    try {
+      if (existingPeriod) {
+        // End period
+        const { error } = await supabase
+          .from('menstrual_cycles')
+          .update({ end_date: today })
+          .eq('start_date', today)
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+      } else {
+        // Start period
+        const { error } = await supabase
+          .from('menstrual_cycles')
+          .insert({ 
+            start_date: today,
+            user_id: user.id 
+          });
+          
+        if (error) throw error;
       }
-    } else {
-      // Start period
-      const { error } = await supabase
-        .from('menstrual_cycles')
-        .insert({ start_date: today });
-        
-      if (error) {
-        toast.error('Erro ao registrar início do período');
-        return;
-      }
-    }
-    
-    // Refresh cycles
-    const { data, error } = await supabase
-      .from('menstrual_cycles')
-      .select('start_date, end_date')
-      .order('start_date', { ascending: false });
       
-    if (!error && data) {
-      setCycles(data);
-      toast.success('Período atualizado com sucesso!');
+      // Refresh cycles
+      const { data, error } = await supabase
+        .from('menstrual_cycles')
+        .select('start_date, end_date')
+        .eq('user_id', user.id)
+        .order('start_date', { ascending: false });
+        
+      if (error) throw error;
+      
+      if (data) {
+        setCycles(data);
+        toast.success('Período atualizado com sucesso!');
+      }
+    } catch (error) {
+      console.error('Error updating period:', error);
+      toast.error('Erro ao atualizar período. Tente novamente.');
     }
   };
   

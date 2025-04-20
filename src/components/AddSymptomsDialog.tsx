@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/AuthProvider';
 
 interface AddSymptomsDialogProps {
   open: boolean;
@@ -21,6 +22,7 @@ const commonSymptoms = [
 export function AddSymptomsDialog({ open, onOpenChange, date }: AddSymptomsDialogProps) {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
+  const { user } = useAuth();
 
   const toggleSymptom = (symptom: string) => {
     setSelectedSymptoms(prev => 
@@ -32,12 +34,18 @@ export function AddSymptomsDialog({ open, onOpenChange, date }: AddSymptomsDialo
 
   const handleSubmit = async () => {
     try {
+      if (!user) {
+        toast.error('Você precisa estar logado para adicionar sintomas.');
+        return;
+      }
+
       const { error } = await supabase
         .from('cycle_symptoms')
         .insert({
           date: date.toISOString().split('T')[0],
           symptoms: selectedSymptoms,
-          notes: notes.trim() || null
+          notes: notes.trim() || null,
+          user_id: user.id
         });
 
       if (error) throw error;
@@ -48,6 +56,7 @@ export function AddSymptomsDialog({ open, onOpenChange, date }: AddSymptomsDialo
       setNotes('');
     } catch (error) {
       toast.error('Erro ao registrar sintomas. Tente novamente.');
+      console.error('Error adding symptoms:', error);
     }
   };
 

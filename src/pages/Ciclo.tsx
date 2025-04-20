@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Calendar as CalendarIcon, LineChart, ListTodo } from 'lucide-react';
+import { Calendar as CalendarIcon, LineChart, ListTodo } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
 import MenstrualCalendar from '@/components/MenstrualCalendar';
 import { CycleCalculatorForm } from '@/components/CycleCalculatorForm';
@@ -10,10 +9,12 @@ import { meditacoes } from '@/data/meditacoes';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { useCycleData } from '@/hooks/useCycleData';
-import { Button } from '@/components/ui/button';
+import { CycleHeader } from '@/components/cycle/CycleHeader';
+import { CycleStats } from '@/components/cycle/CycleStats';
+import { WellnessTip } from '@/components/cycle/WellnessTip';
+import { SymptomsList } from '@/components/cycle/SymptomsList';
 
 const Ciclo = () => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('calendario');
   const { user } = useAuth();
   const { cycles, fetchCycles } = useCycleData();
@@ -142,13 +143,20 @@ const Ciclo = () => {
     setActiveTab('calendario');
   };
 
+  const handleAddSymptoms = () => {
+    setActiveTab('calendario');
+    setTimeout(() => {
+      const symptomsDialog = document.querySelector('.add-symptoms-btn') as HTMLButtonElement;
+      if (symptomsDialog) {
+        symptomsDialog.click();
+      }
+    }, 300);
+  };
+
   return (
     <div className="pb-24">
       <div className="bg-gradient-sunset pt-12 pb-6 px-4 rounded-b-[30px]">
-        <div className="flex items-center gap-3 mb-4">
-          <ArrowLeft size={20} className="text-white" onClick={() => navigate(-1)} />
-          <h1 className="text-white text-xl font-display">Seu Ciclo</h1>
-        </div>
+        <CycleHeader />
         
         <Tabs 
           value={activeTab} 
@@ -203,91 +211,21 @@ const Ciclo = () => {
           </TabsContent>
           
           <TabsContent value="estatisticas" className="mt-0">
-            <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
-              <h3 className="text-lavanda-800 font-medium mb-3">Histórico do Ciclo</h3>
-              
-              <div className="space-y-4">
-                <div className="flex justify-between py-2 border-b border-lavanda-100">
-                  <span className="text-lavanda-700">Duração média do ciclo</span>
-                  <span className="font-medium text-lavanda-800">{averageCycleLength} dias</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-lavanda-100">
-                  <span className="text-lavanda-700">Duração da última menstruação</span>
-                  <span className="font-medium text-lavanda-800">{lastPeriodDuration} dias</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-lavanda-100">
-                  <span className="text-lavanda-700">Fase atual</span>
-                  <span className="font-medium text-lavanda-800">{currentPhase}</span>
-                </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-lavanda-700">Próxima menstruação em</span>
-                  <span className="font-medium text-lavanda-800">
-                    {typeof daysUntilNextPeriod === 'number' ? `${daysUntilNextPeriod} dias` : daysUntilNextPeriod}
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl p-4 shadow-sm">
-              <h3 className="text-lavanda-800 font-medium mb-1">Dica de bem-estar</h3>
-              <p className="text-sm text-lavanda-600 mb-4">
-                {currentPhase === "Menstrual" && "Durante a fase menstrual, seu corpo precisa de descanso. Pratique atividades leves e cuide da sua alimentação."}
-                {currentPhase === "Folicular" && "Na fase folicular, você tende a ter mais energia. Aproveite para praticar exercícios mais intensos."}
-                {currentPhase === "Ovulatória" && "Na fase ovulatória, seu corpo está no auge da energia. Ótimo momento para atividades sociais e físicas."}
-                {currentPhase === "Lútea" && "Durante a fase lútea, seu corpo precisa de mais descanso e autocuidado. Pratique respiração profunda e evite alimentos inflamatórios."}
-                {currentPhase === "Desconhecido" && "Registre seu ciclo regularmente para receber dicas personalizadas para cada fase."}
-              </p>
-            </div>
+            <CycleStats
+              cycles={cycles}
+              currentPhase={currentPhase}
+              daysUntilNextPeriod={daysUntilNextPeriod}
+              averageCycleLength={averageCycleLength}
+              lastPeriodDuration={lastPeriodDuration}
+            />
+            <WellnessTip currentPhase={currentPhase} />
           </TabsContent>
           
           <TabsContent value="sintomas" className="mt-0">
-            <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
-              <h3 className="text-lavanda-800 font-medium mb-3">Registro de Sintomas</h3>
-              
-              {symptoms.length > 0 ? (
-                <div className="space-y-4">
-                  {symptoms.map((day, index) => (
-                    <div key={index} className="pb-3 border-b border-lavanda-100 last:border-0">
-                      <p className="font-medium text-lavanda-700 mb-2">{day.day}</p>
-                      {day.symptoms.length > 0 ? (
-                        <div className="flex flex-wrap gap-2 mb-2">
-                          {day.symptoms.map((symptom, i) => (
-                            <span key={i} className="bg-lavanda-100 text-lavanda-800 rounded-full px-3 py-1 text-xs">
-                              {symptom}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500 mb-2">Nenhum sintoma registrado</p>
-                      )}
-                      {day.notes && (
-                        <p className="text-sm text-lavanda-700 italic mt-1">{day.notes}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center py-4 text-lavanda-600">
-                  Nenhum sintoma registrado ainda. Use o botão "Adicionar sintomas hoje" no calendário para começar.
-                </p>
-              )}
-            </div>
-            
-            <Button 
-              className="w-full bg-lavanda-500 hover:bg-lavanda-600 mt-4"
-              onClick={() => {
-                setActiveTab('calendario');
-                setTimeout(() => {
-                  const today = new Date();
-                  const symptomsDialog = document.querySelector('.add-symptoms-btn') as HTMLButtonElement;
-                  if (symptomsDialog) {
-                    symptomsDialog.click();
-                  }
-                }, 300);
-              }}
-            >
-              Adicionar sintomas hoje
-            </Button>
+            <SymptomsList
+              symptoms={symptoms}
+              onAddSymptoms={handleAddSymptoms}
+            />
           </TabsContent>
         </Tabs>
       </div>

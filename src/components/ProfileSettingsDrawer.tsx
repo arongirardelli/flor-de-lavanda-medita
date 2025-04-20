@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
-import { Edit, Bell, Award, Lock, Flower, Flower2, ArrowRight, ArrowLeft } from "lucide-react";
+import { Edit, Bell, Award, Lock, Flower, Flower2, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { toast } from "sonner";
 
@@ -55,7 +55,7 @@ export function ProfileSettingsDrawer({
   progressMinutes,
   onChangePassword,
 }: ProfileSettingsDrawerProps) {
-  const { profile, loading, updateProfile, error } = useUserProfile();
+  const { profile, loading, updateProfile, error, refetch } = useUserProfile();
   const [editingName, setEditingName] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState("1");
   const [enableNotifications, setEnableNotifications] = useState(false);
@@ -98,6 +98,8 @@ export function ProfileSettingsDrawer({
       if (success) {
         toast.success("Perfil salvo com sucesso!");
         onOpenChange(false);
+        // Atualizar o perfil após salvar para garantir que as alterações sejam refletidas
+        await refetch();
       } else {
         toast.error("Não foi possível salvar o perfil.");
       }
@@ -182,7 +184,11 @@ export function ProfileSettingsDrawer({
               onClick={handleSaveProfile} 
               disabled={loading || savingProfile}
             >
-              {savingProfile ? "Salvando..." : "Salvar alterações"}
+              {savingProfile ? "Salvando..." : (
+                <span className="flex items-center gap-2">
+                  <Check size={16} /> Salvar alterações
+                </span>
+              )}
             </Button>
           </div>
 

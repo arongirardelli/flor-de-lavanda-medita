@@ -4,12 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-
-interface AddSymptomsDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  date: Date;
-}
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/AuthProvider';
 
 const commonSymptoms = [
   'Cólicas', 'Dor de cabeça', 'Irritabilidade', 'Cansaço',
@@ -20,6 +16,7 @@ const commonSymptoms = [
 export function AddSymptomsDialog({ open, onOpenChange, date }: AddSymptomsDialogProps) {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
+  const { user } = useAuth();
 
   const toggleSymptom = (symptom: string) => {
     setSelectedSymptoms(prev => 
@@ -29,10 +26,30 @@ export function AddSymptomsDialog({ open, onOpenChange, date }: AddSymptomsDialo
     );
   };
 
-  const handleSubmit = () => {
-    // Here we'll later add the logic to save to the database
-    toast.success('Sintomas registrados com sucesso!');
-    onOpenChange(false);
+  const handleSubmit = async () => {
+    if (!user) {
+      toast.error('Você precisa estar logado para registrar sintomas');
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('cycle_symptoms').insert({
+        user_id: user.id,
+        date: date.toISOString().split('T')[0],
+        symptoms: selectedSymptoms,
+        notes: notes || null
+      });
+
+      if (error) throw error;
+
+      toast.success('Sintomas registrados com sucesso!');
+      onOpenChange(false);
+      setSelectedSymptoms([]);
+      setNotes('');
+    } catch (error) {
+      console.error('Erro ao registrar sintomas:', error);
+      toast.error('Não foi possível registrar os sintomas');
+    }
   };
 
   return (

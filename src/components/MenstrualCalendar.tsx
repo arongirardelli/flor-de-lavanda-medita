@@ -9,6 +9,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { useCycleData } from '@/hooks/useCycleData';
 import { CustomDay } from './calendar/CustomDay';
 import { CycleLegend } from './calendar/CycleLegend';
+import { isMenstruation } from '@/utils/cycleCalculations';
 
 interface MenstrualCalendarProps {
   onDateSelect?: (date: Date) => void;

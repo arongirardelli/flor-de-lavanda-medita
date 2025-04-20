@@ -8,6 +8,7 @@ interface CustomDayProps extends DayContentProps {
 }
 
 export function CustomDay({ date, cycles, ...props }: CustomDayProps) {
+  // Return early if there's no date
   if (!date) return <DayContent {...props} />;
 
   let className = "";

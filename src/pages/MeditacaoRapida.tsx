@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Play, Pause } from 'lucide-react';
@@ -12,10 +11,9 @@ const MeditacaoRapida = () => {
   const intervalRef = useRef<number | null>(null);
   const navigate = useNavigate();
   
-  // Setup audio (in a real app, you'd have actual audio files)
+  // Setup audio
   useEffect(() => {
-    // For demo purposes, we'll use a placeholder audio URL
-    audioRef.current = new Audio('/assets/emergencia-ansiedade.mp3');
+    audioRef.current = new Audio('https://rwjpbxplhkdvwyvyostn.supabase.co/storage/v1/object/public/meditacao_midia/repiracao-de-emergencia/respiracao-de-emergencia.mp3');
     
     // In a real implementation, you'd have an actual file
     // This is just to simulate audio for the demo

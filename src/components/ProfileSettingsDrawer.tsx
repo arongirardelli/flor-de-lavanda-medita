@@ -1,17 +1,35 @@
-
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { Edit, Bell, Award, Lock } from "lucide-react";
+import { Edit, Bell, Award, Lock, Flower, Flower2 } from "lucide-react";
 
 const AVATARS = [
-  // Pode-se customizar mais tarde com URLs de SVG, aqui formas e cores suaves:
-  { id: '1', color: 'bg-rose-200', img: '', label: 'Rosa' },
-  { id: '2', color: 'bg-violet-200', img: '', label: 'Lavanda' },
-  { id: '3', color: 'bg-cyan-200', img: '', label: 'Azul Claro' },
-  { id: '4', color: 'bg-emerald-200', img: '', label: 'Verde Claro' },
+  {
+    id: "1",
+    color: "bg-rose-200",
+    icon: <Flower size={28} color="#9b87f5" strokeWidth={2} />,
+    label: "Lavanda Rose",
+  },
+  {
+    id: "2",
+    color: "bg-violet-200",
+    icon: <Flower2 size={28} color="#9b87f5" strokeWidth={2} />,
+    label: "Lavanda Classic",
+  },
+  {
+    id: "3",
+    color: "bg-cyan-200",
+    icon: <Flower size={28} color="#5e4694" strokeWidth={2.5} />,
+    label: "Lavanda Azul",
+  },
+  {
+    id: "4",
+    color: "bg-emerald-200",
+    icon: <Flower2 size={28} color="#7e69ab" strokeWidth={2.5} />,
+    label: "Lavanda Verde",
+  },
 ];
 
 const JOURNEY_LEVELS = [
@@ -97,10 +115,12 @@ export function ProfileSettingsDrawer({
                     key={ava.id}
                     type="button"
                     aria-label={ava.label}
-                    className={`rounded-full w-10 h-10 border-2 flex items-center justify-center ${selectedAvatar === ava.id ? "border-lavanda-600 ring-2 ring-lavanda-200" : "border-transparent"} ${ava.color}`}
+                    className={`rounded-full w-10 h-10 border-2 flex items-center justify-center transition
+                      ${selectedAvatar === ava.id ? "border-lavanda-600 ring-2 ring-lavanda-200 scale-110" : "border-transparent opacity-70"} ${ava.color}
+                    `}
                     onClick={() => setSelectedAvatar(ava.id)}
                   >
-                    {/* Futuramente pode carregar imagem SVG aqui */}
+                    {ava.icon}
                   </button>
                 ))}
               </div>
@@ -168,4 +188,3 @@ export function ProfileSettingsDrawer({
     </Drawer>
   )
 }
-

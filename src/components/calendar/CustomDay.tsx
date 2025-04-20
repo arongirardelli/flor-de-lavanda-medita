@@ -4,11 +4,10 @@ import { DayContent, type DayContentProps, type ActiveModifiers } from 'react-da
 import { isMenstruation, getReproductiveDays } from '@/utils/cycleCalculations';
 import type { CycleData } from '@/hooks/useCycleData';
 
-interface CustomDayProps {
+interface CustomDayProps extends Omit<DayContentProps, 'activeModifiers'> {
   date: Date;
   cycles: CycleData[];
-  displayMonth: Date;
-  activeModifiers: ActiveModifiers; // Using the correct ActiveModifiers type
+  activeModifiers: ActiveModifiers;
   selectedDays?: Date[];
   isOutside?: boolean;
   isToday?: boolean;

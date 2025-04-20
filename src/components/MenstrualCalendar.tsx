@@ -22,13 +22,11 @@ const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
   const { cycles, handlePeriodToggle } = useCycleData();
 
   const handleSelect = async (newDate: Date | undefined) => {
-    setDate(newDate);
-    if (newDate && onDateSelect) {
-      onDateSelect(newDate);
-    }
+    if (!newDate) return;
     
-    if (newDate && newDate.toDateString() === new Date().toDateString()) {
-      setSymptomsDialogOpen(true);
+    setDate(newDate);
+    if (onDateSelect) {
+      onDateSelect(newDate);
     }
   };
 
@@ -43,13 +41,18 @@ const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
         locale={ptBR}
         components={{
           DayContent: (props) => {
-            // Extract the date from props
             const dayDate = props.date;
-            // Ensure dayDate is actually a Date object before passing it to CustomDay
-            if (dayDate && dayDate instanceof Date) {
-              return <CustomDay {...props} cycles={cycles} />;
+            if (!dayDate || !(dayDate instanceof Date)) {
+              return null;
             }
-            return null; // Or a fallback component
+            
+            return (
+              <CustomDay
+                {...props}
+                date={dayDate}
+                cycles={cycles}
+              />
+            );
           }
         }}
         className="rounded-md border"

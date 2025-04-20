@@ -13,27 +13,27 @@ export function useCycleData() {
   const [cycles, setCycles] = useState<CycleData[]>([]);
   const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchCycles = async () => {
-      if (!user) return;
-      
-      const { data, error } = await supabase
-        .from('menstrual_cycles')
-        .select('start_date, end_date')
-        .eq('user_id', user.id)
-        .order('start_date', { ascending: false });
-        
-      if (error) {
-        toast.error('Erro ao carregar dados do ciclo');
-        console.error('Error fetching cycles:', error);
-        return;
-      }
-      
-      if (data) {
-        setCycles(data);
-      }
-    };
+  const fetchCycles = async () => {
+    if (!user) return;
     
+    const { data, error } = await supabase
+      .from('menstrual_cycles')
+      .select('start_date, end_date')
+      .eq('user_id', user.id)
+      .order('start_date', { ascending: false });
+      
+    if (error) {
+      toast.error('Erro ao carregar dados do ciclo');
+      console.error('Error fetching cycles:', error);
+      return;
+    }
+    
+    if (data) {
+      setCycles(data);
+    }
+  };
+
+  useEffect(() => {
     fetchCycles();
   }, [user]);
 
@@ -50,13 +50,17 @@ export function useCycleData() {
 
     try {
       if (existingPeriod) {
+        // Se já existe um registro nessa data, vamos limpar todos os registros
+        // para permitir que o usuário comece de novo
         const { error } = await supabase
           .from('menstrual_cycles')
-          .update({ end_date: today })
-          .eq('start_date', today)
+          .delete()
           .eq('user_id', userId);
           
         if (error) throw error;
+        
+        toast.success('Registros de período limpos com sucesso!');
+        setCycles([]);
       } else {
         const { error } = await supabase
           .from('menstrual_cycles')
@@ -66,19 +70,9 @@ export function useCycleData() {
           });
           
         if (error) throw error;
-      }
-      
-      const { data, error } = await supabase
-        .from('menstrual_cycles')
-        .select('start_date, end_date')
-        .eq('user_id', userId)
-        .order('start_date', { ascending: false });
         
-      if (error) throw error;
-      
-      if (data) {
-        setCycles(data);
-        toast.success('Período atualizado com sucesso!');
+        fetchCycles();
+        toast.success('Período iniciado com sucesso!');
       }
     } catch (error) {
       console.error('Error updating period:', error);
@@ -86,5 +80,5 @@ export function useCycleData() {
     }
   };
 
-  return { cycles, handlePeriodToggle };
+  return { cycles, setCycles, handlePeriodToggle, fetchCycles };
 }

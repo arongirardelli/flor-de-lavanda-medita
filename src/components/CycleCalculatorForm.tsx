@@ -27,13 +27,54 @@ interface CycleCalculatorFormProps {
 }
 
 export function CycleCalculatorForm({ onCalculate }: CycleCalculatorFormProps) {
-  const [lastPeriodDate, setLastPeriodDate] = useState<Date>();
+  const [lastPeriodDate, setLastPeriodDate] = useState<Date | undefined>(undefined);
   const [cycleLength, setCycleLength] = useState("28");
   const [periodDuration, setPeriodDuration] = useState("5");
   const { user } = useAuth();
 
   const cycleLengthOptions = Array.from({ length: 15 }, (_, i) => (21 + i).toString());
   const periodDurationOptions = Array.from({ length: 10 }, (_, i) => (3 + i).toString());
+
+  const clearPreviousCycles = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('menstrual_cycles')
+        .delete()
+        .eq('user_id', userId);
+        
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error clearing previous cycles:', error);
+      toast.error('Erro ao limpar ciclos anteriores.');
+      throw error;
+    }
+  };
+
+  const calculateCycleDates = (startDate: Date, cycleLen: number, periodLen: number) => {
+    const dates = [];
+    const cycleDuration = parseInt(cycleLen.toString());
+    const periodDuration = parseInt(periodLen.toString());
+    
+    // Current cycle
+    const currentCycle = new Date(startDate);
+    dates.push({
+      start_date: new Date(currentCycle),
+      end_date: new Date(new Date(currentCycle).setDate(currentCycle.getDate() + periodDuration - 1))
+    });
+    
+    // Next two cycles
+    for (let i = 1; i <= 2; i++) {
+      const nextCycleStart = new Date(new Date(startDate).setDate(startDate.getDate() + (cycleDuration * i)));
+      const nextCycleEnd = new Date(new Date(nextCycleStart).setDate(nextCycleStart.getDate() + periodDuration - 1));
+      
+      dates.push({
+        start_date: nextCycleStart,
+        end_date: nextCycleEnd
+      });
+    }
+    
+    return dates;
+  };
 
   const handleSubmit = async () => {
     if (!lastPeriodDate || !user) {
@@ -42,16 +83,30 @@ export function CycleCalculatorForm({ onCalculate }: CycleCalculatorFormProps) {
     }
 
     try {
-      const { error } = await supabase
-        .from('menstrual_cycles')
-        .insert({
-          start_date: lastPeriodDate.toISOString().split('T')[0],
-          user_id: user.id
-        });
+      // Limpar ciclos anteriores
+      await clearPreviousCycles(user.id);
+      
+      // Calcular as datas do ciclo
+      const cycleDates = calculateCycleDates(
+        lastPeriodDate, 
+        parseInt(cycleLength), 
+        parseInt(periodDuration)
+      );
+      
+      // Inserir novas datas de ciclo
+      for (const cycle of cycleDates) {
+        const { error } = await supabase
+          .from('menstrual_cycles')
+          .insert({
+            start_date: cycle.start_date.toISOString().split('T')[0],
+            end_date: cycle.end_date.toISOString().split('T')[0],
+            user_id: user.id
+          });
 
-      if (error) throw error;
+        if (error) throw error;
+      }
 
-      toast.success('Ciclo registrado com sucesso!');
+      toast.success('Ciclo calculado e registrado com sucesso!');
       onCalculate();
     } catch (error) {
       console.error('Error saving cycle:', error);

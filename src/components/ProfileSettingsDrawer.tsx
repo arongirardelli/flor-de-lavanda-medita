@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
-import { Edit, Bell, Award, Lock, Flower, Flower2, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { Edit, Bell, Award, Lock, Flower, Flower2, Check } from "lucide-react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { toast } from "sonner";
 
@@ -63,16 +63,17 @@ export function ProfileSettingsDrawer({
   const [changingPwd, setChangingPwd] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
 
-  // Sincronizar estado com o perfil sempre que ele é carregado ou alterado
+  // Synchronize state with profile when it loads or changes
   useEffect(() => {
     if (profile) {
+      console.log("Syncing profile data to form:", profile);
       setEditingName(profile.name || "");
       setSelectedAvatar(profile.avatar || "1");
       setEnableNotifications(!!profile.meditation_reminders);
     }
   }, [profile]);
 
-  // Exibir erros de carregamento do perfil
+  // Display loading errors
   useEffect(() => {
     if (error) {
       toast.error(`Erro: ${error}`);
@@ -89,6 +90,12 @@ export function ProfileSettingsDrawer({
     
     setSavingProfile(true);
     try {
+      console.log("Saving profile changes:", {
+        name: editingName,
+        avatar: selectedAvatar,
+        meditation_reminders: enableNotifications,
+      });
+      
       const success = await updateProfile({
         name: editingName,
         avatar: selectedAvatar,
@@ -97,8 +104,8 @@ export function ProfileSettingsDrawer({
       
       if (success) {
         toast.success("Perfil salvo com sucesso!");
-        onOpenChange(false);
-        // Atualizar o perfil após salvar para garantir que as alterações sejam refletidas
+        onOpenChange(false); // Close drawer on successful save
+        // Refresh profile data
         await refetch();
       } else {
         toast.error("Não foi possível salvar o perfil.");
@@ -127,7 +134,7 @@ export function ProfileSettingsDrawer({
       }
     } catch (err) {
       console.error("Erro ao atualizar notificações:", err);
-      // Reverte a UI caso falhe
+      // Revert UI if it fails
       setEnableNotifications(!newValue);
       toast.error("Não foi possível alterar as notificações");
     }
@@ -154,12 +161,18 @@ export function ProfileSettingsDrawer({
         <div className="px-4 py-2 space-y-6">
           {loading && <div className="text-center text-lavanda-600">Carregando...</div>}
 
-          {/* Editar nome e avatar */}
+          {/* Edit name and avatar */}
           <div>
             <p className="font-semibold mb-2 flex items-center gap-1 text-lavanda-700"><Edit size={14} /> Editar Nome e Avatar</p>
             <div className="mb-2">
               <Label htmlFor="user-name" className="text-xs">Nome</Label>
-              <Input id="user-name" type="text" value={editingName} onChange={e => setEditingName(e.target.value)} className="mt-1 mb-2" />
+              <Input 
+                id="user-name" 
+                type="text" 
+                value={editingName} 
+                onChange={e => setEditingName(e.target.value)} 
+                className="mt-1 mb-2" 
+              />
             </div>
             <div>
               <Label className="text-xs mb-1">Avatar</Label>
@@ -192,7 +205,7 @@ export function ProfileSettingsDrawer({
             </Button>
           </div>
 
-          {/* Lembretes de Meditação */}
+          {/* Meditation Reminders */}
           <div>
             <p className="font-semibold mb-2 flex items-center gap-1 text-lavanda-700"><Bell size={14} /> Lembretes de Meditação</p>
             <div className="flex items-center gap-2">
@@ -209,7 +222,7 @@ export function ProfileSettingsDrawer({
             <p className="mt-1 text-xs text-lavanda-400">Você receberá lembretes tipo: "Hora de cuidar de você 💜"</p>
           </div>
 
-          {/* Nível da Jornada */}
+          {/* Journey Level */}
           <div>
             <p className="font-semibold mb-2 flex items-center gap-1 text-lavanda-700"><Award size={14} /> Nível da Jornada</p>
             <div className="mb-1">
@@ -218,7 +231,7 @@ export function ProfileSettingsDrawer({
             <p className="text-xs text-lavanda-400">Baseado no total de minutos de meditação registrados.</p>
           </div>
 
-          {/* Privacidade e Segurança */}
+          {/* Privacy and Security */}
           <div>
             <p className="font-semibold mb-2 flex items-center gap-1 text-lavanda-700"><Lock size={14} /> Privacidade e Segurança</p>
             {changingPwd ? (
@@ -251,5 +264,5 @@ export function ProfileSettingsDrawer({
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }

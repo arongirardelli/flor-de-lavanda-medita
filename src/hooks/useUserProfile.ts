@@ -38,6 +38,7 @@ export function useUserProfile() {
         setError(error.message);
         setProfile(null);
       } else {
+        console.log("Profile data fetched:", data);
         setProfile(data);
       }
     } catch (err) {
@@ -59,6 +60,7 @@ export function useUserProfile() {
     setLoading(true);
     
     try {
+      console.log("Updating profile with fields:", fields);
       const { error } = await supabase
         .from("profiles")
         .update(fields)
@@ -70,8 +72,11 @@ export function useUserProfile() {
         return false;
       }
       
-      // Atualiza o perfil localmente para refletir as mudanças imediatamente
+      // Immediately update local profile state to reflect changes
       setProfile(prev => prev ? { ...prev, ...fields } : null);
+      
+      // Fetch fresh data from the server to ensure we have the latest state
+      await fetchProfile();
       return true;
     } catch (err) {
       console.error("Unexpected error updating profile:", err);

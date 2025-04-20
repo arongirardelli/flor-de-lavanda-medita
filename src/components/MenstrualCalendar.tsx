@@ -4,53 +4,47 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ptBR } from 'date-fns/locale';
-import { AddSymptomsDialog } from './AddSymptomsDialog';
-import { useAuth } from '@/components/AuthProvider';
-import { useCycleData } from '@/hooks/useCycleData';
 import { CustomDay } from './calendar/CustomDay';
 import { CycleLegend } from './calendar/CycleLegend';
-import { isMenstruation } from '@/utils/cycleCalculations';
 
-interface MenstrualCalendarProps {
-  onDateSelect?: (date: Date) => void;
-}
-
-const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [symptomsDialogOpen, setSymptomsDialogOpen] = useState(false);
-  const { user } = useAuth();
-  const { cycles, handlePeriodToggle } = useCycleData();
-
-  const handleSelect = async (newDate: Date | undefined) => {
+const MenstrualCalendar = () => {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [cycleStartDate, setCycleStartDate] = useState<Date | null>(null);
+  
+  const handleSelect = (newDate: Date | undefined) => {
     if (!newDate) return;
-    
-    setDate(newDate);
-    if (onDateSelect) {
-      onDateSelect(newDate);
+    setSelectedDate(newDate);
+  };
+
+  const handleStartPeriod = () => {
+    if (selectedDate) {
+      setCycleStartDate(selectedDate);
     }
   };
 
   return (
-    <Card className="p-4">
+    <Card className="p-4 max-w-md mx-auto">
       <h3 className="text-lavanda-800 font-medium mb-4">Seu Ciclo Menstrual</h3>
       
       <Calendar
         mode="single"
-        selected={date}
+        selected={selectedDate}
         onSelect={handleSelect}
         locale={ptBR}
         components={{
           DayContent: (props) => {
-            const dayDate = props.date;
-            if (!dayDate || !(dayDate instanceof Date)) {
-              return null;
-            }
-            
+            const today = new Date();
+            const isToday = props.date && 
+              today.getDate() === props.date.getDate() &&
+              today.getMonth() === props.date.getMonth() &&
+              today.getFullYear() === props.date.getFullYear();
+              
             return (
               <CustomDay
                 {...props}
-                date={dayDate}
-                cycles={cycles}
+                date={props.date}
+                cycleStartDate={cycleStartDate}
+                isToday={isToday}
               />
             );
           }
@@ -59,31 +53,15 @@ const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
       />
       
       <div className="mt-4 space-y-4">
-        {date && user && (
-          <Button 
-            onClick={() => handlePeriodToggle(date, user.id)}
-            variant="outline" 
-            className="w-full add-symptoms-btn"
-          >
-            {isMenstruation(date, cycles) ? 'Finalizar Período' : 'Iniciar Período'}
-          </Button>
-        )}
-        
         <Button 
-          onClick={() => setSymptomsDialogOpen(true)}
+          onClick={handleStartPeriod}
           className="w-full bg-lavanda-500 hover:bg-lavanda-600"
         >
-          Adicionar sintomas hoje
+          {cycleStartDate ? 'Atualizar Início do Período' : 'Iniciar Período'}
         </Button>
         
         <CycleLegend />
       </div>
-      
-      <AddSymptomsDialog
-        open={symptomsDialogOpen}
-        onOpenChange={setSymptomsDialogOpen}
-        date={date || new Date()}
-      />
     </Card>
   );
 };

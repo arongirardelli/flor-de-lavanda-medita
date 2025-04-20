@@ -1,48 +1,44 @@
 
 import React from 'react';
-import { DayContent, type DayContentProps, type ActiveModifiers } from 'react-day-picker';
-import { isMenstruation, getReproductiveDays } from '@/utils/cycleCalculations';
-import type { CycleData } from '@/hooks/useCycleData';
+import { DayContent, type DayContentProps } from 'react-day-picker';
+import { cn } from "@/lib/utils";
 
-interface CustomDayProps extends Omit<DayContentProps, 'activeModifiers'> {
+interface CustomDayProps extends DayContentProps {
   date: Date;
-  cycles: CycleData[];
-  activeModifiers: ActiveModifiers;
-  selectedDays?: Date[];
-  isOutside?: boolean;
+  cycleStartDate: Date | null;
   isToday?: boolean;
 }
 
-export function CustomDay(props: CustomDayProps) {
-  const { date, cycles, ...dayContentProps } = props;
-
-  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
-    return <DayContent {...dayContentProps} date={date} />;
+export function CustomDay({ date, cycleStartDate, isToday, ...props }: CustomDayProps) {
+  if (!date || !cycleStartDate) {
+    return <DayContent {...props} date={date} />;
   }
 
+  const dayDiff = Math.floor((date.getTime() - cycleStartDate.getTime()) / (1000 * 60 * 60 * 24));
+  
   let className = "";
   
-  try {
-    // Check if current date is menstruation
-    const isMenstruationDay = isMenstruation(date, cycles);
-    
-    // Get ovulation and fertile days
-    const { isOvulation, isFertile } = getReproductiveDays(date, cycles);
-    
-    if (isMenstruationDay) {
-      className = "bg-rosa-200 hover:bg-rosa-300 text-rosa-900 rounded-full transition-colors";
-    } else if (isOvulation) {
-      className = "bg-lavanda-400 hover:bg-lavanda-500 text-white rounded-full transition-colors";
-    } else if (isFertile) {
-      className = "bg-lavanda-200 hover:bg-lavanda-300 text-lavanda-800 rounded-full transition-colors";
-    }
-  } catch (error) {
-    console.error("Error calculating day status:", error);
+  // Menstruation days (1-5)
+  if (dayDiff >= 0 && dayDiff < 5) {
+    className = "bg-[#F9C5D1] text-rosa-900 rounded-full";
+  }
+  // Ovulation day (14)
+  else if (dayDiff === 13) {
+    className = "bg-[#B084CC] text-white rounded-full";
+  }
+  // Fertile days (12-16)
+  else if (dayDiff >= 11 && dayDiff <= 15) {
+    className = "bg-[#D8C8F2] text-lavanda-800 rounded-full";
   }
   
+  // Add today marker
+  if (isToday) {
+    className = cn(className, "ring-2 ring-lavanda-500");
+  }
+
   return (
     <div className={className}>
-      <DayContent {...dayContentProps} date={date} />
+      <DayContent {...props} date={date} />
     </div>
   );
 }

@@ -8,17 +8,40 @@ import BottomNavigation from '@/components/BottomNavigation';
 import MeditationCard from '@/components/MeditationCard';
 import { meditacoes } from '@/data/meditacoes';
 import { useUserActivity } from '@/hooks/useUserActivity';
+import { ProfileSettingsDrawer } from '@/components/ProfileSettingsDrawer';
 
 const Perfil = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('estatisticas');
+
+  // Estado do Drawer de Configurações
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Mock user data para demonstração dos controles de nome/avatar
+  const [userName, setUserName] = useState("Flor");
+  const [userAvatar, setUserAvatar] = useState("2");
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
   const userActivity = useUserActivity();
-  
+
+  // Funções fake para exemplo. Troque por integrar ao backend conforme desejar
+  const handleUpdateNameAvatar = (name: string, avatar: string) => {
+    setUserName(name);
+    setUserAvatar(avatar);
+  };
+  const handleToggleNotifications = (v: boolean) => setNotificationsEnabled(v);
+  const handleChangePassword = (pwd: string) => {
+    // Chame lógica para mudar senha do usuário
+    if (pwd.length >= 6) {
+      alert("Senha alterada com sucesso!");
+    }
+  };
+
   // Get favorite meditations
-  const favoriteMeditations = meditacoes.filter(med => 
+  const favoriteMeditations = meditacoes.filter(med =>
     userActivity.favorites.includes(med.id)
   );
-  
+
   return (
     <div className="pb-24">
       {/* Header */}
@@ -27,22 +50,26 @@ const Perfil = () => {
           <div>
             <h1 className="text-white text-2xl font-display">Seu Perfil</h1>
           </div>
-          <button onClick={() => navigate('/configuracoes')}>
+          {/* BOTÃO para abrir Drawer de Configurações */}
+          <button onClick={() => setDrawerOpen(true)}>
             <Settings size={22} className="text-white" />
           </button>
         </div>
-        
+
         <div className="flex items-center">
-          <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4">
+          {/* Avatar */}
+          <div className={`w-20 h-20 rounded-full flex items-center justify-center mr-4 transition-all
+            ${userAvatar === "1" ? "bg-rose-200" : userAvatar === "2" ? "bg-violet-200" : userAvatar === "3" ? "bg-cyan-200" : "bg-emerald-200"}
+          `}>
             <User size={40} className="text-white" />
           </div>
           <div>
-            <h2 className="text-white text-lg font-medium">Flor</h2>
-            <p className="text-white/80">Meditante Tranquila</p>
+            <h2 className="text-white text-lg font-medium">{userName}</h2>
+            <p className="text-white/80">{userActivity.streak > 3 ? "Guardiã do Equilíbrio" : "Meditante Tranquila"}</p>
           </div>
         </div>
       </div>
-      
+
       {/* Stats cards */}
       <div className="px-4 -mt-4">
         <div className="grid grid-cols-3 gap-3">
@@ -51,13 +78,11 @@ const Perfil = () => {
             <span className="text-lg font-medium text-lavanda-800">{userActivity.totalMinutes}</span>
             <span className="text-xs text-lavanda-600">Minutos</span>
           </div>
-          
           <div className="bg-white rounded-xl p-3 shadow-sm flex flex-col items-center">
             <Moon size={20} className="text-lavanda-500 mb-1" />
             <span className="text-lg font-medium text-lavanda-800">{userActivity.totalSessions}</span>
             <span className="text-xs text-lavanda-600">Sessões</span>
           </div>
-          
           <div className="bg-white rounded-xl p-3 shadow-sm flex flex-col items-center">
             <Award size={20} className="text-lavanda-500 mb-1" />
             <span className="text-lg font-medium text-lavanda-800">{userActivity.streak}</span>
@@ -65,7 +90,7 @@ const Perfil = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Weekly goal */}
       <div className="px-4 mt-6">
         <div className="bg-white rounded-xl p-4 shadow-sm mb-6">
@@ -76,31 +101,31 @@ const Perfil = () => {
           <Progress value={userActivity.weeklyProgress} className="h-2" />
         </div>
       </div>
-      
+
       {/* Tabs */}
       <div className="px-4">
-        <Tabs 
-          value={activeTab} 
+        <Tabs
+          value={activeTab}
           onValueChange={setActiveTab}
           className="w-full"
         >
           <TabsList className="w-full bg-lavanda-50 p-1 rounded-full mb-4">
-            <TabsTrigger 
-              value="estatisticas" 
+            <TabsTrigger
+              value="estatisticas"
               className="rounded-full data-[state=active]:bg-lavanda-500 data-[state=active]:text-white"
             >
               <Calendar size={16} className="mr-1" />
               Atividade
             </TabsTrigger>
-            <TabsTrigger 
-              value="favoritos" 
+            <TabsTrigger
+              value="favoritos"
               className="rounded-full data-[state=active]:bg-lavanda-500 data-[state=active]:text-white"
             >
               <Heart size={16} className="mr-1" />
               Favoritos
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="estatisticas" className="mt-0">
             <h3 className="text-lavanda-800 font-medium mb-3">Atividade Recente</h3>
             <div className="space-y-3">
@@ -115,7 +140,7 @@ const Perfil = () => {
               ))}
             </div>
           </TabsContent>
-          
+
           <TabsContent value="favoritos" className="mt-0">
             <h3 className="text-lavanda-800 font-medium mb-3">Suas Meditações Favoritas</h3>
             {favoriteMeditations.length > 0 ? (
@@ -143,10 +168,24 @@ const Perfil = () => {
           </TabsContent>
         </Tabs>
       </div>
-      
+
       <BottomNavigation />
+
+      {/* Drawer de configurações do perfil */}
+      <ProfileSettingsDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        currentName={userName}
+        currentAvatar={userAvatar}
+        onUpdateNameAvatar={handleUpdateNameAvatar}
+        notificationsEnabled={notificationsEnabled}
+        onToggleNotifications={handleToggleNotifications}
+        progressMinutes={userActivity.totalMinutes}
+        onChangePassword={handleChangePassword}
+      />
     </div>
   );
 };
 
 export default Perfil;
+

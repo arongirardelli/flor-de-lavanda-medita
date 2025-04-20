@@ -7,6 +7,13 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 
+// Add the prop types here
+interface AddSymptomsDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  date: Date;
+}
+
 const commonSymptoms = [
   'Cólicas', 'Dor de cabeça', 'Irritabilidade', 'Cansaço',
   'Sensibilidade nos seios', 'Inchaço', 'Alterações no humor',

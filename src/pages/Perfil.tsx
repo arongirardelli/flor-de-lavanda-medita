@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Award, Calendar, Heart, Settings, Clock, Moon } from 'lucide-react';
+import { User, Award, Calendar, Heart, Settings, Clock, Moon, Flower, Flower2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import BottomNavigation from '@/components/BottomNavigation';
@@ -9,38 +9,58 @@ import MeditationCard from '@/components/MeditationCard';
 import { meditacoes } from '@/data/meditacoes';
 import { useUserActivity } from '@/hooks/useUserActivity';
 import { ProfileSettingsDrawer } from '@/components/ProfileSettingsDrawer';
+import { useUserProfile } from '@/hooks/useUserProfile';
+
+const AVATARS = [
+  {
+    id: "1",
+    color: "bg-rose-200",
+    icon: <Flower size={40} color="#9b87f5" strokeWidth={2} />,
+  },
+  {
+    id: "2",
+    color: "bg-violet-200",
+    icon: <Flower2 size={40} color="#9b87f5" strokeWidth={2} />,
+  },
+  {
+    id: "3",
+    color: "bg-cyan-200",
+    icon: <Flower size={40} color="#5e4694" strokeWidth={2.5} />,
+  },
+  {
+    id: "4",
+    color: "bg-emerald-200",
+    icon: <Flower2 size={40} color="#7e69ab" strokeWidth={2.5} />,
+  },
+];
 
 const Perfil = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('estatisticas');
-
-  // Estado do Drawer de Configurações
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Mock user data para demonstração dos controles de nome/avatar
-  const [userName, setUserName] = useState("Flor");
-  const [userAvatar, setUserAvatar] = useState("2");
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-
   const userActivity = useUserActivity();
-
-  // Funções fake para exemplo. Troque por integrar ao backend conforme desejar
-  const handleUpdateNameAvatar = (name: string, avatar: string) => {
-    setUserName(name);
-    setUserAvatar(avatar);
-  };
-  const handleToggleNotifications = (v: boolean) => setNotificationsEnabled(v);
-  const handleChangePassword = (pwd: string) => {
-    // Chame lógica para mudar senha do usuário
-    if (pwd.length >= 6) {
-      alert("Senha alterada com sucesso!");
-    }
-  };
+  const { profile, refetch } = useUserProfile();
 
   // Get favorite meditations
   const favoriteMeditations = meditacoes.filter(med =>
     userActivity.favorites.includes(med.id)
   );
+
+  // Render avatar from DB/profile
+  const renderAvatar = () => {
+    if (!profile) {
+      return (
+        <div className="w-20 h-20 rounded-full flex items-center justify-center mr-4 bg-gray-200 animate-pulse" />
+      );
+    }
+    const ava = AVATARS.find(a => a.id === profile.avatar) ?? AVATARS[1];
+    return (
+      <div className={`w-20 h-20 rounded-full flex items-center justify-center mr-4 transition-all ${ava.color}`}>
+        {ava.icon}
+      </div>
+    );
+  };
 
   return (
     <div className="pb-24">
@@ -50,7 +70,6 @@ const Perfil = () => {
           <div>
             <h1 className="text-white text-2xl font-display">Seu Perfil</h1>
           </div>
-          {/* BOTÃO para abrir Drawer de Configurações */}
           <button onClick={() => setDrawerOpen(true)}>
             <Settings size={22} className="text-white" />
           </button>
@@ -58,14 +77,12 @@ const Perfil = () => {
 
         <div className="flex items-center">
           {/* Avatar */}
-          <div className={`w-20 h-20 rounded-full flex items-center justify-center mr-4 transition-all
-            ${userAvatar === "1" ? "bg-rose-200" : userAvatar === "2" ? "bg-violet-200" : userAvatar === "3" ? "bg-cyan-200" : "bg-emerald-200"}
-          `}>
-            <User size={40} className="text-white" />
-          </div>
+          {renderAvatar()}
           <div>
-            <h2 className="text-white text-lg font-medium">{userName}</h2>
-            <p className="text-white/80">{userActivity.streak > 3 ? "Guardiã do Equilíbrio" : "Meditante Tranquila"}</p>
+            <h2 className="text-white text-lg font-medium">{profile?.name || "..."}</h2>
+            <p className="text-white/80">
+              {userActivity.streak > 3 ? "Guardiã do Equilíbrio" : "Meditante Tranquila"}
+            </p>
           </div>
         </div>
       </div>
@@ -175,17 +192,16 @@ const Perfil = () => {
       <ProfileSettingsDrawer
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
-        currentName={userName}
-        currentAvatar={userAvatar}
-        onUpdateNameAvatar={handleUpdateNameAvatar}
-        notificationsEnabled={notificationsEnabled}
-        onToggleNotifications={handleToggleNotifications}
         progressMinutes={userActivity.totalMinutes}
-        onChangePassword={handleChangePassword}
+        onChangePassword={(pwd) => {
+          // Chame lógica para mudar senha real aqui, se necessário.
+          if (pwd.length >= 6) {
+            alert("Senha alterada com sucesso!");
+          }
+        }}
       />
     </div>
   );
 };
 
 export default Perfil;
-

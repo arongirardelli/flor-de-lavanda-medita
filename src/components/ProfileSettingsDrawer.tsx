@@ -1,9 +1,12 @@
+
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { Edit, Bell, Award, Lock, Flower, Flower2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Edit, Bell, Award, Lock, Flower, Flower2, ArrowRight, ArrowLeft } from "lucide-react";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { toast } from "sonner";
 
 const AVATARS = [
   {
@@ -42,11 +45,6 @@ const JOURNEY_LEVELS = [
 interface ProfileSettingsDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  currentName: string;
-  currentAvatar: string;
-  onUpdateNameAvatar: (name: string, avatar: string) => void;
-  notificationsEnabled: boolean;
-  onToggleNotifications: (value: boolean) => void;
   progressMinutes: number;
   onChangePassword: (newPwd: string) => void;
 }
@@ -54,33 +52,46 @@ interface ProfileSettingsDrawerProps {
 export function ProfileSettingsDrawer({
   open,
   onOpenChange,
-  currentName,
-  currentAvatar,
-  onUpdateNameAvatar,
-  notificationsEnabled,
-  onToggleNotifications,
   progressMinutes,
   onChangePassword,
 }: ProfileSettingsDrawerProps) {
-  // Local states for user input
-  const [editingName, setEditingName] = useState(currentName);
-  const [selectedAvatar, setSelectedAvatar] = useState(currentAvatar);
-  const [enableNotifications, setEnableNotifications] = useState(notificationsEnabled);
+  const { profile, loading, updateProfile, refetch } = useUserProfile();
+  const [editingName, setEditingName] = useState("");
+  const [selectedAvatar, setSelectedAvatar] = useState("1");
+  const [enableNotifications, setEnableNotifications] = useState(false);
   const [editingPwd, setEditingPwd] = useState("");
   const [changingPwd, setChangingPwd] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setEditingName(profile.name || "");
+      setSelectedAvatar(profile.avatar || "1");
+      setEnableNotifications(!!profile.meditation_reminders);
+    }
+  }, [profile]);
 
   // Calculate user journey level
   const userLevel = JOURNEY_LEVELS
     .slice().reverse()
     .find(lvl => progressMinutes >= lvl.min)?.label || JOURNEY_LEVELS[0].label;
 
-  function handleSaveProfile() {
-    onUpdateNameAvatar(editingName, selectedAvatar);
-    onOpenChange(false);
+  async function handleSaveProfile() {
+    const success = await updateProfile({
+      name: editingName,
+      avatar: selectedAvatar,
+      meditation_reminders: enableNotifications,
+    });
+    if (success) {
+      toast.success("Perfil salvo com sucesso!");
+      onOpenChange(false);
+      refetch(); // Garante atualização ao fechar
+    } else {
+      toast.error("Não foi possível salvar o perfil.");
+    }
   }
-  function handleToggleNotifications() {
-    setEnableNotifications(!enableNotifications);
-    onToggleNotifications(!enableNotifications);
+  async function handleToggleNotifications() {
+    setEnableNotifications(v => !v);
+    await updateProfile({ meditation_reminders: !enableNotifications });
   }
   function handleChangePwd() {
     if (editingPwd.length >= 6) {
@@ -125,7 +136,9 @@ export function ProfileSettingsDrawer({
                 ))}
               </div>
             </div>
-            <Button className="mt-4 w-full" onClick={handleSaveProfile}>Salvar alterações</Button>
+            <Button className="mt-4 w-full" onClick={handleSaveProfile} disabled={loading}>
+              {loading ? "Salvando..." : "Salvar alterações"}
+            </Button>
           </div>
 
           {/* Lembretes de Meditação */}

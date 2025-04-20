@@ -60,6 +60,33 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          avatar: string | null
+          created_at: string
+          id: string
+          meditation_reminders: boolean | null
+          name: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string
+          id: string
+          meditation_reminders?: boolean | null
+          name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string
+          id?: string
+          meditation_reminders?: boolean | null
+          name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

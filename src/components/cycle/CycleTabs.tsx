@@ -1,6 +1,6 @@
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CalendarIcon, LineChart, ListTodo } from 'lucide-react';
-import { CycleCalculatorForm } from '@/components/CycleCalculatorForm';
+import { CalendarIcon, ListTodo } from 'lucide-react';
 import MeditationCard from '@/components/MeditationCard';
 import { meditacoes } from '@/data/meditacoes';
 import MenstrualCalendar from '@/components/MenstrualCalendar';
@@ -52,7 +52,6 @@ export function CycleTabs({
         </TabsTrigger>
       </TabsList>
       <TabsContent value="calendario" className="mt-0">
-        <CycleCalculatorForm onCalculate={onCycleCalculated} />
         <div className="mt-4">
           <MenstrualCalendar />
         </div>

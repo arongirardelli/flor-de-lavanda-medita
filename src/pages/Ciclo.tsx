@@ -1,18 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar as CalendarIcon, LineChart, ListTodo } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
-import MenstrualCalendar from '@/components/MenstrualCalendar';
-import { CycleCalculatorForm } from '@/components/CycleCalculatorForm';
-import MeditationCard from '@/components/MeditationCard';
-import { meditacoes } from '@/data/meditacoes';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { useCycleData } from '@/hooks/useCycleData';
 import { CycleHeader } from '@/components/cycle/CycleHeader';
-import { CycleStats } from '@/components/cycle/CycleStats';
-import { WellnessTip } from '@/components/cycle/WellnessTip';
-import { SymptomsList } from '@/components/cycle/SymptomsList';
+import { CycleTabs } from '@/components/cycle/CycleTabs';
 
 const Ciclo = () => {
   const [activeTab, setActiveTab] = useState('calendario');
@@ -24,10 +16,6 @@ const Ciclo = () => {
     symptoms: string[];
     notes?: string | null;
   }>>([]);
-  
-  const cicloMeditacoes = meditacoes.filter(med => 
-    med.categoria.toLowerCase() === 'ciclo'
-  );
   
   const calculateStats = () => {
     if (!cycles || cycles.length === 0) {
@@ -95,13 +83,6 @@ const Ciclo = () => {
     };
   };
   
-  const { 
-    averageCycleLength, 
-    lastPeriodDuration, 
-    currentPhase, 
-    daysUntilNextPeriod 
-  } = calculateStats();
-  
   const fetchSymptoms = async () => {
     if (!user) return;
     
@@ -153,81 +134,30 @@ const Ciclo = () => {
     }, 300);
   };
 
+  const { 
+    averageCycleLength, 
+    lastPeriodDuration, 
+    currentPhase, 
+    daysUntilNextPeriod 
+  } = calculateStats();
+
   return (
     <div className="pb-24">
       <div className="bg-gradient-sunset pt-12 pb-6 px-4 rounded-b-[30px]">
         <CycleHeader />
         
-        <Tabs 
-          value={activeTab} 
-          onValueChange={setActiveTab}
-          className="w-full"
-        >
-          <TabsList className="w-full bg-white/20 backdrop-blur-sm p-1 rounded-full">
-            <TabsTrigger 
-              value="calendario" 
-              className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600"
-            >
-              <CalendarIcon size={16} className="mr-1" />
-              Calendário
-            </TabsTrigger>
-            <TabsTrigger 
-              value="estatisticas" 
-              className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600"
-            >
-              <LineChart size={16} className="mr-1" />
-              Estatísticas
-            </TabsTrigger>
-            <TabsTrigger 
-              value="sintomas" 
-              className="rounded-full data-[state=active]:bg-white data-[state=active]:text-lavanda-600"
-            >
-              <ListTodo size={16} className="mr-1" />
-              Sintomas
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="calendario" className="mt-0">
-            <CycleCalculatorForm onCalculate={handleCycleCalculated} />
-            <div className="mt-4">
-              <MenstrualCalendar />
-            </div>
-            
-            <div className="mt-8">
-              <h3 className="text-lavanda-800 font-medium mb-4">Meditações para seu ciclo</h3>
-              <div className="grid grid-cols-2 gap-4">
-                {cicloMeditacoes.map((meditacao) => (
-                  <MeditationCard
-                    key={meditacao.id}
-                    id={meditacao.id}
-                    title={meditacao.titulo}
-                    duration={meditacao.duracao}
-                    category={meditacao.categoria}
-                    imageUrl={meditacao.imagemUrl}
-                  />
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="estatisticas" className="mt-0">
-            <CycleStats
-              cycles={cycles}
-              currentPhase={currentPhase}
-              daysUntilNextPeriod={daysUntilNextPeriod}
-              averageCycleLength={averageCycleLength}
-              lastPeriodDuration={lastPeriodDuration}
-            />
-            <WellnessTip currentPhase={currentPhase} />
-          </TabsContent>
-          
-          <TabsContent value="sintomas" className="mt-0">
-            <SymptomsList
-              symptoms={symptoms}
-              onAddSymptoms={handleAddSymptoms}
-            />
-          </TabsContent>
-        </Tabs>
+        <CycleTabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          cycles={cycles}
+          currentPhase={currentPhase}
+          daysUntilNextPeriod={daysUntilNextPeriod}
+          averageCycleLength={averageCycleLength}
+          lastPeriodDuration={lastPeriodDuration}
+          symptoms={symptoms}
+          onCycleCalculated={handleCycleCalculated}
+          onAddSymptoms={handleAddSymptoms}
+        />
       </div>
       
       <BottomNavigation />

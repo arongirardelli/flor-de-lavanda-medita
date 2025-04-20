@@ -16,7 +16,6 @@ interface CustomDayProps extends Omit<DayContentProps, 'activeModifiers'> {
 export function CustomDay(props: CustomDayProps) {
   const { date, cycles, ...dayContentProps } = props;
 
-  // If there's no valid date, return the default day content
   if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
     return <DayContent {...dayContentProps} date={date} />;
   }
@@ -27,15 +26,14 @@ export function CustomDay(props: CustomDayProps) {
     const { isOvulation, isFertile } = getReproductiveDays(date, cycles);
     
     if (isMenstruation(date, cycles)) {
-      className = "bg-rosa-200 text-rosa-900 rounded-full";
+      className = "bg-rosa-200 hover:bg-rosa-300 text-rosa-900 rounded-full";
     } else if (isOvulation) {
-      className = "bg-lavanda-400 text-white rounded-full";
+      className = "bg-lavanda-400 hover:bg-lavanda-500 text-white rounded-full";
     } else if (isFertile) {
-      className = "bg-lavanda-200 text-lavanda-800 rounded-full";
+      className = "bg-lavanda-200 hover:bg-lavanda-300 text-lavanda-800 rounded-full";
     }
   } catch (error) {
     console.error("Error calculating day status:", error);
-    // If there's an error calculating status, still render the day normally
   }
   
   return (

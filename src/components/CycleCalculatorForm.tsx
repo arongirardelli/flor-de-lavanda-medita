@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -30,10 +29,16 @@ export function CycleCalculatorForm({ onCalculate }: CycleCalculatorFormProps) {
   const [lastPeriodDate, setLastPeriodDate] = useState<Date | undefined>(undefined);
   const [cycleLength, setCycleLength] = useState("28");
   const [periodDuration, setPeriodDuration] = useState("5");
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const { user } = useAuth();
 
   const cycleLengthOptions = Array.from({ length: 15 }, (_, i) => (21 + i).toString());
   const periodDurationOptions = Array.from({ length: 10 }, (_, i) => (3 + i).toString());
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setLastPeriodDate(date);
+    setIsCalendarOpen(false);
+  };
 
   const clearPreviousCycles = async (userId: string) => {
     try {
@@ -55,14 +60,12 @@ export function CycleCalculatorForm({ onCalculate }: CycleCalculatorFormProps) {
     const cycleDuration = parseInt(cycleLen.toString());
     const periodDuration = parseInt(periodLen.toString());
     
-    // Current cycle
     const currentCycle = new Date(startDate);
     dates.push({
       start_date: new Date(currentCycle),
       end_date: new Date(new Date(currentCycle).setDate(currentCycle.getDate() + periodDuration - 1))
     });
     
-    // Next two cycles
     for (let i = 1; i <= 2; i++) {
       const nextCycleStart = new Date(new Date(startDate).setDate(startDate.getDate() + (cycleDuration * i)));
       const nextCycleEnd = new Date(new Date(nextCycleStart).setDate(nextCycleStart.getDate() + periodDuration - 1));
@@ -83,17 +86,14 @@ export function CycleCalculatorForm({ onCalculate }: CycleCalculatorFormProps) {
     }
 
     try {
-      // Limpar ciclos anteriores
       await clearPreviousCycles(user.id);
       
-      // Calcular as datas do ciclo
       const cycleDates = calculateCycleDates(
         lastPeriodDate, 
         parseInt(cycleLength), 
         parseInt(periodDuration)
       );
       
-      // Inserir novas datas de ciclo
       for (const cycle of cycleDates) {
         const { error } = await supabase
           .from('menstrual_cycles')
@@ -121,7 +121,7 @@ export function CycleCalculatorForm({ onCalculate }: CycleCalculatorFormProps) {
       <div className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">1º dia da última menstruação</label>
-          <Popover>
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -138,7 +138,7 @@ export function CycleCalculatorForm({ onCalculate }: CycleCalculatorFormProps) {
               <Calendar
                 mode="single"
                 selected={lastPeriodDate}
-                onSelect={setLastPeriodDate}
+                onSelect={handleDateSelect}
                 locale={ptBR}
                 className={cn("p-3 pointer-events-auto")}
               />

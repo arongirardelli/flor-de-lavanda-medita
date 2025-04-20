@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { DayContent } from 'react-day-picker';
+import { DayContent, type DayContentProps, type ActiveModifiers } from 'react-day-picker';
 import { isMenstruation, getReproductiveDays } from '@/utils/cycleCalculations';
 import type { CycleData } from '@/hooks/useCycleData';
 
@@ -8,7 +8,7 @@ interface CustomDayProps {
   date: Date;
   cycles: CycleData[];
   displayMonth: Date;
-  activeModifiers: Record<string, boolean>;
+  activeModifiers: ActiveModifiers; // Using the correct ActiveModifiers type
   selectedDays?: Date[];
   isOutside?: boolean;
   isToday?: boolean;

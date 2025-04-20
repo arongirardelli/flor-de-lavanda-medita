@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Award, Calendar, Heart, Settings, Clock, Moon, Flower, Flower2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,6 +10,8 @@ import { meditacoes } from '@/data/meditacoes';
 import { useUserActivity } from '@/hooks/useUserActivity';
 import { ProfileSettingsDrawer } from '@/components/ProfileSettingsDrawer';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const AVATARS = [
   {
@@ -40,7 +42,14 @@ const Perfil = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const userActivity = useUserActivity();
-  const { profile, refetch } = useUserProfile();
+  const { profile, loading: profileLoading, error: profileError, refetch: refetchProfile } = useUserProfile();
+
+  // Avisar quando houver erro ao carregar perfil
+  useEffect(() => {
+    if (profileError) {
+      toast.error(`Erro ao carregar perfil: ${profileError}`);
+    }
+  }, [profileError]);
 
   // Get favorite meditations
   const favoriteMeditations = meditacoes.filter(med =>
@@ -49,17 +58,28 @@ const Perfil = () => {
 
   // Render avatar from DB/profile
   const renderAvatar = () => {
-    if (!profile) {
+    if (profileLoading || !profile) {
       return (
         <div className="w-20 h-20 rounded-full flex items-center justify-center mr-4 bg-gray-200 animate-pulse" />
       );
     }
-    const ava = AVATARS.find(a => a.id === profile.avatar) ?? AVATARS[1];
+    
+    const ava = AVATARS.find(a => a.id === profile.avatar) ?? AVATARS[0];
     return (
       <div className={`w-20 h-20 rounded-full flex items-center justify-center mr-4 transition-all ${ava.color}`}>
         {ava.icon}
       </div>
     );
+  };
+
+  // Determinar o nível do usuário com base na atividade
+  const getUserLevel = () => {
+    if (profileLoading || !profile) return "Meditante";
+    
+    if (userActivity.totalMinutes >= 400) return "Guardiã do Equilíbrio";
+    if (userActivity.totalMinutes >= 120) return "Meditante Tranquila";
+    if (userActivity.totalMinutes >= 30) return "Exploradora";
+    return "Iniciante";
   };
 
   return (
@@ -81,7 +101,7 @@ const Perfil = () => {
           <div>
             <h2 className="text-white text-lg font-medium">{profile?.name || "..."}</h2>
             <p className="text-white/80">
-              {userActivity.streak > 3 ? "Guardiã do Equilíbrio" : "Meditante Tranquila"}
+              {getUserLevel()}
             </p>
           </div>
         </div>
@@ -196,7 +216,7 @@ const Perfil = () => {
         onChangePassword={(pwd) => {
           // Chame lógica para mudar senha real aqui, se necessário.
           if (pwd.length >= 6) {
-            alert("Senha alterada com sucesso!");
+            toast.success("Senha alterada com sucesso!");
           }
         }}
       />

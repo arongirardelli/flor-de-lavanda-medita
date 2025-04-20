@@ -14,6 +14,7 @@ export function useUserProfile() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchProfile = useCallback(async () => {
     if (!user) {
@@ -21,18 +22,31 @@ export function useUserProfile() {
       setProfile(null);
       return;
     }
+    
     setLoading(true);
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("id, name, avatar, meditation_reminders")
-      .eq("id", user.id)
-      .maybeSingle();
-    if (error) {
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, name, avatar, meditation_reminders")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        setError(error.message);
+        setProfile(null);
+      } else {
+        setProfile(data);
+      }
+    } catch (err) {
+      console.error("Unexpected error fetching profile:", err);
+      setError("Falha ao carregar o perfil");
       setProfile(null);
-    } else {
-      setProfile(data);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [user]);
 
   useEffect(() => {
@@ -40,16 +54,39 @@ export function useUserProfile() {
   }, [fetchProfile]);
 
   const updateProfile = async (fields: Partial<UserProfile>) => {
-    if (!user) return;
+    if (!user) return false;
+    
     setLoading(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update(fields)
-      .eq("id", user.id);
-    if (!error) await fetchProfile();
-    setLoading(false);
-    return !error;
+    
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update(fields)
+        .eq("id", user.id);
+        
+      if (error) {
+        console.error("Error updating profile:", error);
+        setError(error.message);
+        return false;
+      }
+      
+      // Atualiza o perfil localmente para refletir as mudanças imediatamente
+      setProfile(prev => prev ? { ...prev, ...fields } : null);
+      return true;
+    } catch (err) {
+      console.error("Unexpected error updating profile:", err);
+      setError("Falha ao atualizar o perfil");
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return { profile, loading, updateProfile, refetch: fetchProfile };
+  return { 
+    profile, 
+    loading, 
+    error,
+    updateProfile, 
+    refetch: fetchProfile 
+  };
 }

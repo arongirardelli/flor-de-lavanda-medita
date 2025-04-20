@@ -55,13 +55,15 @@ export function ProfileSettingsDrawer({
   progressMinutes,
   onChangePassword,
 }: ProfileSettingsDrawerProps) {
-  const { profile, loading, updateProfile, refetch } = useUserProfile();
+  const { profile, loading, updateProfile, error } = useUserProfile();
   const [editingName, setEditingName] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState("1");
   const [enableNotifications, setEnableNotifications] = useState(false);
   const [editingPwd, setEditingPwd] = useState("");
   const [changingPwd, setChangingPwd] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
 
+  // Sincronizar estado com o perfil sempre que ele é carregado ou alterado
   useEffect(() => {
     if (profile) {
       setEditingName(profile.name || "");
@@ -70,34 +72,72 @@ export function ProfileSettingsDrawer({
     }
   }, [profile]);
 
+  // Exibir erros de carregamento do perfil
+  useEffect(() => {
+    if (error) {
+      toast.error(`Erro: ${error}`);
+    }
+  }, [error]);
+
   // Calculate user journey level
   const userLevel = JOURNEY_LEVELS
     .slice().reverse()
     .find(lvl => progressMinutes >= lvl.min)?.label || JOURNEY_LEVELS[0].label;
 
   async function handleSaveProfile() {
-    const success = await updateProfile({
-      name: editingName,
-      avatar: selectedAvatar,
-      meditation_reminders: enableNotifications,
-    });
-    if (success) {
-      toast.success("Perfil salvo com sucesso!");
-      onOpenChange(false);
-      refetch(); // Garante atualização ao fechar
-    } else {
-      toast.error("Não foi possível salvar o perfil.");
+    if (!profile) return;
+    
+    setSavingProfile(true);
+    try {
+      const success = await updateProfile({
+        name: editingName,
+        avatar: selectedAvatar,
+        meditation_reminders: enableNotifications,
+      });
+      
+      if (success) {
+        toast.success("Perfil salvo com sucesso!");
+        onOpenChange(false);
+      } else {
+        toast.error("Não foi possível salvar o perfil.");
+      }
+    } catch (err) {
+      console.error("Erro ao salvar perfil:", err);
+      toast.error("Erro ao salvar perfil");
+    } finally {
+      setSavingProfile(false);
     }
   }
+  
   async function handleToggleNotifications() {
-    setEnableNotifications(v => !v);
-    await updateProfile({ meditation_reminders: !enableNotifications });
+    const newValue = !enableNotifications;
+    setEnableNotifications(newValue);
+    
+    try {
+      const success = await updateProfile({ 
+        meditation_reminders: newValue 
+      });
+      
+      if (success) {
+        toast.success(newValue 
+          ? "Notificações de meditação ativadas" 
+          : "Notificações de meditação desativadas");
+      }
+    } catch (err) {
+      console.error("Erro ao atualizar notificações:", err);
+      // Reverte a UI caso falhe
+      setEnableNotifications(!newValue);
+      toast.error("Não foi possível alterar as notificações");
+    }
   }
+  
   function handleChangePwd() {
     if (editingPwd.length >= 6) {
       onChangePassword(editingPwd);
       setChangingPwd(false);
       setEditingPwd("");
+    } else {
+      toast.error("A senha deve ter pelo menos 6 caracteres");
     }
   }
 
@@ -110,6 +150,7 @@ export function ProfileSettingsDrawer({
           </DrawerTitle>
         </DrawerHeader>
         <div className="px-4 py-2 space-y-6">
+          {loading && <div className="text-center text-lavanda-600">Carregando...</div>}
 
           {/* Editar nome e avatar */}
           <div>
@@ -136,8 +177,12 @@ export function ProfileSettingsDrawer({
                 ))}
               </div>
             </div>
-            <Button className="mt-4 w-full" onClick={handleSaveProfile} disabled={loading}>
-              {loading ? "Salvando..." : "Salvar alterações"}
+            <Button 
+              className="mt-4 w-full" 
+              onClick={handleSaveProfile} 
+              disabled={loading || savingProfile}
+            >
+              {savingProfile ? "Salvando..." : "Salvar alterações"}
             </Button>
           </div>
 
@@ -152,9 +197,10 @@ export function ProfileSettingsDrawer({
                 onChange={handleToggleNotifications}
                 className="accent-lavanda-500 size-5 rounded"
                 id="meditation-reminder"
+                disabled={loading}
               />
             </div>
-            <p className="mt-1 text-xs text-lavanda-400">Você receberá lembretes tipo: “Hora de cuidar de você 💜”</p>
+            <p className="mt-1 text-xs text-lavanda-400">Você receberá lembretes tipo: "Hora de cuidar de você 💜"</p>
           </div>
 
           {/* Nível da Jornada */}

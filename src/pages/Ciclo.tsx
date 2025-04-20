@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { CycleTabs } from '@/components/cycle/CycleTabs';
 import { useCycleData } from '@/hooks/useCycleData';
+import { useCycleStats } from '@/hooks/useCycleStats';
 
 const Ciclo = () => {
   const [activeTab, setActiveTab] = useState('calendario');
@@ -13,12 +14,16 @@ const Ciclo = () => {
     cycles, 
     handlePeriodToggle 
   } = useCycleData();
+  
+  // Get cycle statistics based on the cycles data
+  const { 
+    currentPhase,
+    daysUntilNextPeriod,
+    averageCycleLength,
+    lastPeriodDuration 
+  } = useCycleStats(cycles);
 
-  // Mock data for now - in a real app this would come from your backend
-  const currentPhase = "Folicular";
-  const daysUntilNextPeriod = 14;
-  const averageCycleLength = 28;
-  const lastPeriodDuration = 5;
+  // Mock symptoms data for now
   const symptoms = [
     {
       day: "Hoje",

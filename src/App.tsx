@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/AuthProvider";
+import { useState } from "react";
 
 // Páginas
 import Index from "./pages/Index";
@@ -16,28 +17,31 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import MediaUpload from "./pages/MediaUpload";
 
-const queryClient = new QueryClient();
+const App = () => {
+  // Create a new QueryClient instance inside the component
+  const [queryClient] = useState(() => new QueryClient());
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <Toaster />
-    <Sonner />
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/explorar" element={<Explorar />} />
-          <Route path="/meditacao/:id" element={<MeditacaoPage />} />
-          <Route path="/meditacao-rapida" element={<MeditacaoRapida />} />
-          <Route path="/ciclo" element={<Ciclo />} />
-          <Route path="/perfil" element={<Perfil />} />
-          <Route path="/upload" element={<MediaUpload />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
-  </QueryClientProvider>
-);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/explorar" element={<Explorar />} />
+            <Route path="/meditacao/:id" element={<MeditacaoPage />} />
+            <Route path="/meditacao-rapida" element={<MeditacaoRapida />} />
+            <Route path="/ciclo" element={<Ciclo />} />
+            <Route path="/perfil" element={<Perfil />} />
+            <Route path="/upload" element={<MediaUpload />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

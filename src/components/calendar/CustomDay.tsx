@@ -1,18 +1,25 @@
 
-import { DayContent, DayContentProps } from 'react-day-picker';
+import React from 'react';
+import { DayContent } from 'react-day-picker';
 import { isMenstruation, getReproductiveDays } from '@/utils/cycleCalculations';
 import type { CycleData } from '@/hooks/useCycleData';
 
-// Create a proper interface extending DayContentProps
-interface CustomDayProps extends Omit<DayContentProps, 'date'> {
-  date?: Date;
+interface CustomDayProps {
+  date: Date;
   cycles: CycleData[];
+  displayMonth: Date;
+  activeModifiers: Record<string, boolean>;
+  selectedDays?: Date[];
+  isOutside?: boolean;
+  isToday?: boolean;
 }
 
-export function CustomDay({ date, cycles, ...props }: CustomDayProps) {
+export function CustomDay(props: CustomDayProps) {
+  const { date, cycles, ...dayContentProps } = props;
+
   // If there's no valid date, return the default day content
   if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
-    return <DayContent {...props} />;
+    return <DayContent {...dayContentProps} date={date} />;
   }
 
   let className = "";
@@ -34,7 +41,7 @@ export function CustomDay({ date, cycles, ...props }: CustomDayProps) {
   
   return (
     <div className={className}>
-      <DayContent {...props} />
+      <DayContent {...dayContentProps} date={date} />
     </div>
   );
 }

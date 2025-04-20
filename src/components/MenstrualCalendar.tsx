@@ -42,7 +42,15 @@ const MenstrualCalendar = ({ onDateSelect }: MenstrualCalendarProps) => {
         onSelect={handleSelect}
         locale={ptBR}
         components={{
-          DayContent: (props) => <CustomDay {...props} cycles={cycles} />
+          DayContent: (props) => {
+            // Extract the date from props
+            const dayDate = props.date;
+            // Ensure dayDate is actually a Date object before passing it to CustomDay
+            if (dayDate && dayDate instanceof Date) {
+              return <CustomDay {...props} cycles={cycles} />;
+            }
+            return null; // Or a fallback component
+          }
         }}
         className="rounded-md border"
       />

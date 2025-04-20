@@ -10,9 +10,11 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { toast } from 'sonner';
+
 interface CycleCalculatorFormProps {
   onCalculate: () => void;
 }
+
 export function CycleCalculatorForm({
   onCalculate
 }: CycleCalculatorFormProps) {
@@ -20,19 +22,24 @@ export function CycleCalculatorForm({
   const [cycleLength, setCycleLength] = useState("28");
   const [periodDuration, setPeriodDuration] = useState("5");
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  
   const {
     user
   } = useAuth();
+  
   const cycleLengthOptions = Array.from({
     length: 15
   }, (_, i) => (21 + i).toString());
+  
   const periodDurationOptions = Array.from({
     length: 10
   }, (_, i) => (3 + i).toString());
+  
   const handleDateSelect = (date: Date | undefined) => {
     setLastPeriodDate(date);
     setIsCalendarOpen(false);
   };
+  
   const clearPreviousCycles = async (userId: string) => {
     try {
       const {
@@ -45,6 +52,7 @@ export function CycleCalculatorForm({
       throw error;
     }
   };
+  
   const calculateCycleDates = (startDate: Date, cycleLen: number, periodLen: number) => {
     const dates = [];
     const cycleDuration = parseInt(cycleLen.toString());
@@ -78,6 +86,7 @@ export function CycleCalculatorForm({
     }
     return dates;
   };
+  
   const handleSubmit = async () => {
     if (!lastPeriodDate || !user) {
       toast.error('Por favor, preencha a data do último período');
@@ -103,5 +112,88 @@ export function CycleCalculatorForm({
       toast.error('Erro ao salvar o ciclo. Tente novamente.');
     }
   };
-  return;
+  
+  return (
+    <div className="space-y-4 mb-6 bg-white rounded-lg p-4 shadow-sm">
+      <h2 className="text-xl font-medium text-lavanda-800">Calculadora de Ciclo</h2>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <label htmlFor="last-period" className="block text-sm font-medium text-gray-700">
+            Data do último período
+          </label>
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                id="last-period"
+                variant="outline"
+                className="w-full justify-start text-left font-normal"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {lastPeriodDate ? (
+                  format(lastPeriodDate, "PPP", { locale: ptBR })
+                ) : (
+                  <span>Selecione uma data</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={lastPeriodDate}
+                onSelect={handleDateSelect}
+                locale={ptBR}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label htmlFor="cycle-length" className="block text-sm font-medium text-gray-700">
+              Duração do ciclo
+            </label>
+            <Select value={cycleLength} onValueChange={setCycleLength}>
+              <SelectTrigger id="cycle-length" className="w-full">
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {cycleLengthOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option} dias
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="period-duration" className="block text-sm font-medium text-gray-700">
+              Duração do período
+            </label>
+            <Select value={periodDuration} onValueChange={setPeriodDuration}>
+              <SelectTrigger id="period-duration" className="w-full">
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {periodDurationOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option} dias
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <Button 
+          className="w-full bg-lavanda-500 hover:bg-lavanda-600" 
+          onClick={handleSubmit}
+          disabled={!lastPeriodDate}
+        >
+          Calcular ciclo
+        </Button>
+      </div>
+    </div>
+  );
 }

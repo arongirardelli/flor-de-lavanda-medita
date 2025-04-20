@@ -14,6 +14,9 @@ export function WellnessTip({ currentPhase }: WellnessTipProps) {
         {currentPhase === "Lútea" && "Durante a fase lútea, seu corpo precisa de mais descanso e autocuidado. Pratique respiração profunda e evite alimentos inflamatórios."}
         {currentPhase === "Desconhecido" && "Registre seu ciclo regularmente para receber dicas personalizadas para cada fase."}
       </p>
+      <p className="text-xs text-rosa-600 border-t border-lavanda-100 pt-3">
+        ⚠️ Este ciclo não deve, em hipótese alguma, ser usado como método contraceptivo ou planejamento de gravidez. Ele é apenas uma ferramenta para auxiliar no controle das emoções e bem-estar, não substituindo o acompanhamento de um profissional.
+      </p>
     </div>
   );
 }

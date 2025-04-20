@@ -26,11 +26,11 @@ export function CustomDay(props: CustomDayProps) {
     const { isOvulation, isFertile } = getReproductiveDays(date, cycles);
     
     if (isMenstruation(date, cycles)) {
-      className = "bg-rosa-200 hover:bg-rosa-300 text-rosa-900 rounded-full";
+      className = "bg-rosa-200 hover:bg-rosa-300 text-rosa-900 rounded-full transition-colors";
     } else if (isOvulation) {
-      className = "bg-lavanda-400 hover:bg-lavanda-500 text-white rounded-full";
+      className = "bg-lavanda-400 hover:bg-lavanda-500 text-white rounded-full transition-colors";
     } else if (isFertile) {
-      className = "bg-lavanda-200 hover:bg-lavanda-300 text-lavanda-800 rounded-full";
+      className = "bg-lavanda-200 hover:bg-lavanda-300 text-lavanda-800 rounded-full transition-colors";
     }
   } catch (error) {
     console.error("Error calculating day status:", error);

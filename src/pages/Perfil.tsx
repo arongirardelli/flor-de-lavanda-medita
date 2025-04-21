@@ -11,6 +11,7 @@ import { ProfileHeader } from './perfil/ProfileHeader';
 import { ProfileStats } from './perfil/ProfileStats';
 import { ProfileWeeklyGoal } from './perfil/ProfileWeeklyGoal';
 import { ProfileTabs } from './perfil/ProfileTabs';
+import { JourneyLevelProgressBar } from '@/components/JourneyLevelProgressBar';
 
 const Perfil = () => {
   const navigate = useNavigate();
@@ -33,9 +34,10 @@ const Perfil = () => {
   // Nível do usuário
   const getUserLevel = () => {
     if (profileLoading || !profile) return "Meditante";
-    if (userActivity.totalMinutes >= 400) return "Guardiã do Equilíbrio";
-    if (userActivity.totalMinutes >= 120) return "Meditante Tranquila";
-    if (userActivity.totalMinutes >= 30) return "Exploradora";
+    // Não usaremos mais o totalMinutes, mas weekly_journey_minutes para motivação semanal
+    if (profile.weekly_journey_minutes >= 400) return "Guardiã do Equilíbrio";
+    if (profile.weekly_journey_minutes >= 120) return "Meditante Tranquila";
+    if (profile.weekly_journey_minutes >= 30) return "Exploradora";
     return "Iniciante";
   };
 
@@ -48,7 +50,17 @@ const Perfil = () => {
         onSettingsClick={() => setDrawerOpen(true)}
       />
 
-      <div className="px-4 -mt-4">
+      {/* Barra de progresso dos níveis da jornada semanal */}
+      {profile && (
+        <div className="px-4 -mt-4">
+          <JourneyLevelProgressBar
+            weeklyMinutes={profile.weekly_journey_minutes}
+            lastUpdate={profile.weekly_journey_updated_at || null}
+          />
+        </div>
+      )}
+
+      <div className="px-4">
         <ProfileStats userActivity={userActivity} />
       </div>
 

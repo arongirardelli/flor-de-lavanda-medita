@@ -68,6 +68,8 @@ export type Database = {
           meditation_reminders: boolean | null
           name: string | null
           updated_at: string
+          weekly_journey_minutes: number
+          weekly_journey_updated_at: string | null
         }
         Insert: {
           avatar?: string | null
@@ -76,6 +78,8 @@ export type Database = {
           meditation_reminders?: boolean | null
           name?: string | null
           updated_at?: string
+          weekly_journey_minutes?: number
+          weekly_journey_updated_at?: string | null
         }
         Update: {
           avatar?: string | null
@@ -84,6 +88,8 @@ export type Database = {
           meditation_reminders?: boolean | null
           name?: string | null
           updated_at?: string
+          weekly_journey_minutes?: number
+          weekly_journey_updated_at?: string | null
         }
         Relationships: []
       }

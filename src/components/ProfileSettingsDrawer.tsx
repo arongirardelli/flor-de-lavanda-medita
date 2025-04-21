@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect, useCallback } from "react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { toast } from "sonner";
-import { ProfileNameAvatarSection } from "./ProfileNameAvatarSection";
 import { ProfileNotificationsSection } from "./ProfileNotificationsSection";
 import { ProfileLevelSection } from "./ProfileLevelSection";
 import { ProfilePasswordSection } from "./ProfilePasswordSection";
@@ -24,7 +23,6 @@ export function ProfileSettingsDrawer({
 }: ProfileSettingsDrawerProps) {
   const { profile, loading, updateProfile, error, refetch } = useUserProfile();
   const [enableNotifications, setEnableNotifications] = useState(false);
-  const [savingProfile, setSavingProfile] = useState(false);
 
   // Sync notification toggle state with the profile
   useEffect(() => {
@@ -39,30 +37,6 @@ export function ProfileSettingsDrawer({
       toast.error(`Erro: ${error}`);
     }
   }, [error]);
-
-  // Save name & avatar
-  const handleSaveProfileNameAvatar = useCallback(async (fields: { name: string; avatar: string }) => {
-    if (!profile) return;
-    setSavingProfile(true);
-    try {
-      const success = await updateProfile({
-        ...fields,
-        meditation_reminders: enableNotifications,
-        // Avatar and name will be saved, journey level not stored directly (calculated via progress)
-      });
-      if (success) {
-        toast.success("Perfil salvo com sucesso!");
-        onOpenChange(false); // Close drawer on successful save
-        await refetch();
-      } else {
-        toast.error("Não foi possível salvar o perfil.");
-      }
-    } catch (err) {
-      toast.error("Erro ao salvar perfil");
-    } finally {
-      setSavingProfile(false);
-    }
-  }, [profile, enableNotifications, updateProfile, refetch, onOpenChange]);
 
   // Notification toggle
   const handleToggleNotifications = useCallback(async (val: boolean) => {
@@ -90,14 +64,6 @@ export function ProfileSettingsDrawer({
         </DrawerHeader>
         <div className="px-4 py-2 space-y-6">
           {loading && <div className="text-center text-lavanda-600">Carregando...</div>}
-
-          {/* Name + avatar */}
-          <ProfileNameAvatarSection
-            profile={profile}
-            loading={loading}
-            savingProfile={savingProfile}
-            onSave={handleSaveProfileNameAvatar}
-          />
 
           {/* Meditation Reminders */}
           <ProfileNotificationsSection

@@ -45,7 +45,7 @@ export function ProfileHeader({
       <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
       
       <div className="relative z-10">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-white text-2xl font-display">Seu Perfil</h1>
           </div>
@@ -59,20 +59,22 @@ export function ProfileHeader({
 
         <div className="flex flex-col items-center text-center">
           {loading ? (
-            <div className="w-20 h-20 rounded-full bg-white/20 animate-pulse" />
+            <div className="w-24 h-24 rounded-full bg-white/20 animate-pulse" />
           ) : (
             profile && user && (
-              <ProfileEditSection
-                userId={user.id}
-                currentName={profile.name}
-                currentPhotoUrl={profile.photo_url}
-                onUpdate={onProfileUpdate}
-              />
+              <div className="relative group cursor-pointer">
+                <ProfileEditSection
+                  userId={user.id}
+                  currentName={profile.name}
+                  currentPhotoUrl={profile.photo_url}
+                  onUpdate={onProfileUpdate}
+                />
+              </div>
             )
           )}
 
-          <div className="mt-4">
-            <div className="bg-white/20 rounded-full px-4 py-1 inline-block">
+          <div className="mt-6">
+            <div className="bg-white/20 rounded-full px-4 py-1.5 inline-block">
               <p className="text-white/90 text-sm font-medium">{userLevel}</p>
             </div>
           </div>

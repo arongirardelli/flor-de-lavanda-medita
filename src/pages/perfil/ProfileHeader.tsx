@@ -1,36 +1,19 @@
-
-import { Settings, Flower, Flower2 } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
+import { ProfileEditSection } from "@/components/ProfileEditSection";
+import { useAuth } from "@/components/AuthProvider";
 
 type ProfileHeaderProps = {
   loading: boolean;
-  profile: { name: string; avatar: string } | null;
+  profile: { 
+    id: string;
+    name: string | null;
+    photo_url: string | null;
+  } | null;
   userLevel: string;
   onSettingsClick: () => void;
+  onProfileUpdate: () => void;
 };
-
-const AVATARS = [
-  {
-    id: "1",
-    color: "bg-rose-200",
-    icon: <Flower size={40} color="#9b87f5" strokeWidth={2} />,
-  },
-  {
-    id: "2",
-    color: "bg-violet-200",
-    icon: <Flower2 size={40} color="#9b87f5" strokeWidth={2} />,
-  },
-  {
-    id: "3",
-    color: "bg-cyan-200",
-    icon: <Flower size={40} color="#5e4694" strokeWidth={2.5} />,
-  },
-  {
-    id: "4",
-    color: "bg-emerald-200",
-    icon: <Flower2 size={40} color="#7e69ab" strokeWidth={2.5} />,
-  },
-];
 
 const calculateProgress = (level: string): number => {
   switch (level) {
@@ -46,21 +29,14 @@ const calculateProgress = (level: string): number => {
   }
 };
 
-export function ProfileHeader({ loading, profile, userLevel, onSettingsClick }: ProfileHeaderProps) {
-  const renderAvatar = () => {
-    if (loading || !profile) {
-      return (
-        <div className="w-20 h-20 rounded-full flex items-center justify-center bg-gray-200 animate-pulse" />
-      );
-    }
-    const ava = AVATARS.find(a => a.id === profile.avatar) ?? AVATARS[0];
-    return (
-      <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${ava.color}`}>
-        {ava.icon}
-      </div>
-    );
-  };
-
+export function ProfileHeader({ 
+  loading, 
+  profile, 
+  userLevel, 
+  onSettingsClick,
+  onProfileUpdate 
+}: ProfileHeaderProps) {
+  const { user } = useAuth();
   const progress = calculateProgress(userLevel);
 
   return (
@@ -81,11 +57,20 @@ export function ProfileHeader({ loading, profile, userLevel, onSettingsClick }: 
         </div>
 
         <div className="flex flex-col items-center text-center">
-          {renderAvatar()}
+          {loading ? (
+            <div className="w-20 h-20 rounded-full bg-white/20 animate-pulse" />
+          ) : (
+            profile && user && (
+              <ProfileEditSection
+                userId={user.id}
+                currentName={profile.name}
+                currentPhotoUrl={profile.photo_url}
+                onUpdate={onProfileUpdate}
+              />
+            )
+          )}
+
           <div className="mt-4">
-            <h2 className="text-white text-xl font-medium mb-1">
-              {profile?.name || "..."}
-            </h2>
             <div className="bg-white/20 rounded-full px-4 py-1 inline-block">
               <p className="text-white/90 text-sm font-medium">{userLevel}</p>
             </div>

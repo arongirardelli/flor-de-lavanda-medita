@@ -7,6 +7,7 @@ export type UserProfile = {
   id: string;
   name: string | null;
   avatar: string | null;
+  photo_url: string | null;
   meditation_reminders: boolean | null;
   weekly_journey_minutes: number;
   weekly_journey_updated_at: string | null;

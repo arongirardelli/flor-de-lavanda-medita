@@ -1,3 +1,4 @@
+
 import { Settings } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { ProfileEditSection } from "@/components/ProfileEditSection";

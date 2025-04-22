@@ -1,22 +1,22 @@
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { Logo } from "@/components/Logo";
 
-export const Auth = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Auth = () => {
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
+  const navigate = useNavigate();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
 
     try {
       if (isSignUp) {
@@ -25,68 +25,79 @@ export const Auth = () => {
           password,
         });
         if (error) throw error;
-        toast.success('Cadastro realizado com sucesso! Verifique seu email.');
+        toast.success("Cadastro realizado com sucesso! Verifique seu email.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
-        toast.success('Login realizado com sucesso!');
-        navigate('/');
+        navigate("/");
       }
     } catch (error: any) {
       toast.error(error.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto p-4 min-h-screen flex items-center justify-center">
-      <Card className="w-full max-w-md p-6">
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          {isSignUp ? 'Criar Conta' : 'Entrar'}
-        </h1>
-        
+    <div className="min-h-screen bg-gradient-lavanda flex flex-col items-center justify-center px-4">
+      <div className="w-full max-w-md space-y-8">
+        <div className="flex flex-col items-center">
+          <Logo className="w-48 mb-8" />
+          <h2 className="text-2xl font-display text-white mb-2">
+            {isSignUp ? "Criar conta" : "Bem-vinda de volta"}
+          </h2>
+          <p className="text-white/80">
+            {isSignUp
+              ? "Comece sua jornada de bem-estar"
+              : "Continue sua jornada de bem-estar"}
+          </p>
+        </div>
+
         <form onSubmit={handleAuth} className="space-y-4">
-          <div>
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <Input
-              type="password"
-              placeholder="Senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={isLoading}
+          <Input
+            type="email"
+            placeholder="Seu email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="bg-white/20 text-white placeholder:text-white/50 border-white/20"
+            required
+          />
+          <Input
+            type="password"
+            placeholder="Sua senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="bg-white/20 text-white placeholder:text-white/50 border-white/20"
+            required
+          />
+          <Button
+            type="submit"
+            className="w-full bg-white text-lavanda-600 hover:bg-white/90"
+            disabled={loading}
           >
-            {isLoading ? 'Carregando...' : isSignUp ? 'Cadastrar' : 'Entrar'}
+            {loading
+              ? "Carregando..."
+              : isSignUp
+              ? "Criar conta"
+              : "Entrar"}
           </Button>
         </form>
 
-        <div className="mt-4 text-center">
-          <Button
-            variant="link"
+        <div className="text-center">
+          <button
+            type="button"
             onClick={() => setIsSignUp(!isSignUp)}
-            className="text-sm"
+            className="text-white/80 hover:text-white text-sm"
           >
-            {isSignUp ? 'Já tem uma conta? Entre' : 'Não tem uma conta? Cadastre-se'}
-          </Button>
+            {isSignUp
+              ? "Já tem uma conta? Entre"
+              : "Não tem uma conta? Cadastre-se"}
+          </button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

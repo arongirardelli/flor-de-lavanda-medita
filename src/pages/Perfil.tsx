@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNavigation from '@/components/BottomNavigation';
@@ -31,6 +30,11 @@ const Perfil = () => {
     userActivity.favorites.includes(med.id)
   );
 
+  const handleProfileUpdate = () => {
+    refetchProfile();
+    toast.success("Perfil atualizado com sucesso!");
+  };
+
   // Nível do usuário
   const getUserLevel = () => {
     if (profileLoading || !profile) return "Meditante";
@@ -48,6 +52,7 @@ const Perfil = () => {
         profile={profile}
         userLevel={getUserLevel()}
         onSettingsClick={() => setDrawerOpen(true)}
+        onProfileUpdate={handleProfileUpdate}
       />
 
       {/* Barra de progresso dos níveis da jornada semanal */}

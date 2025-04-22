@@ -67,6 +67,7 @@ export type Database = {
           id: string
           meditation_reminders: boolean | null
           name: string | null
+          photo_url: string | null
           updated_at: string
           weekly_journey_minutes: number
           weekly_journey_updated_at: string | null
@@ -77,6 +78,7 @@ export type Database = {
           id: string
           meditation_reminders?: boolean | null
           name?: string | null
+          photo_url?: string | null
           updated_at?: string
           weekly_journey_minutes?: number
           weekly_journey_updated_at?: string | null
@@ -87,6 +89,7 @@ export type Database = {
           id?: string
           meditation_reminders?: boolean | null
           name?: string | null
+          photo_url?: string | null
           updated_at?: string
           weekly_journey_minutes?: number
           weekly_journey_updated_at?: string | null

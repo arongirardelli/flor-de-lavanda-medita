@@ -32,7 +32,7 @@ export function useUserProfile() {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, name, avatar, meditation_reminders, weekly_journey_minutes, weekly_journey_updated_at")
+        .select("id, name, avatar, photo_url, meditation_reminders, weekly_journey_minutes, weekly_journey_updated_at")
         .eq("id", user.id)
         .maybeSingle();
 
